@@ -93,7 +93,8 @@ export function LoginForm({
 							<Field>
 								<Button type="submit">Влезте</Button>
 								<FieldDescription className="text-center">
-									Нямате акаунт? <Link to="/hefest-frontend/signup">Регистрирайте се</Link>
+									Нямате акаунт?{" "}
+									<Link to="/hefest-frontend/signup">Регистрирайте се</Link>
 								</FieldDescription>
 							</Field>
 						</FieldGroup>

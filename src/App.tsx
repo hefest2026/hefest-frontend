@@ -1,9 +1,9 @@
 import { Route, Routes } from "react-router-dom";
+import PrivacyPolicy from "./components/privacy";
+import TermsAndConditions from "./components/terms";
 import { ThemeProvider } from "./components/theme-provider";
 import Login from "./pages/Login";
 import SignupPage from "./pages/SignUp";
-import TermsAndConditions from "./components/terms";
-import PrivacyPolicy from "./components/privacy";
 
 export function App() {
 	return (
