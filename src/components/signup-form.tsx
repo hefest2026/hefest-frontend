@@ -69,7 +69,7 @@ export function SignupForm({
 							<Field>
 								<Button type="submit">Създай акаунта</Button>
 								<FieldDescription className="text-center">
-									Вече имате акаунт? <Link to="/login">Влезте</Link>
+									Вече имате акаунт? <Link to="/hefest-frontend">Влезте</Link>
 								</FieldDescription>
 							</Field>
 						</FieldGroup>
@@ -77,9 +77,9 @@ export function SignupForm({
 				</CardContent>
 			</Card>
 			<FieldDescription className="px-6 text-center">
-				С кликване на "Продължи", вие се съгласявате с нашите{" "}
-				<Link to="/terms">Условия за ползване</Link> и{" "}
-				<Link to="/privacy">Политика за поверителност</Link>.
+				Със създаването на акаунта, Вие се съгласявате с нашите{" "}
+				<Link to="/hefest-frontend/terms">Условията за ползване</Link> и{" "}
+				<Link to="/hefest-frontend/privacy">Политиката за поверителност</Link>.
 			</FieldDescription>
 		</div>
 	);

@@ -93,7 +93,7 @@ export function LoginForm({
 							<Field>
 								<Button type="submit">Влезте</Button>
 								<FieldDescription className="text-center">
-									Нямате акаунт? <Link to="/signup">Регистрирайте се</Link>
+									Нямате акаунт? <Link to="/hefest-frontend/signup">Регистрирайте се</Link>
 								</FieldDescription>
 							</Field>
 						</FieldGroup>
@@ -102,8 +102,8 @@ export function LoginForm({
 			</Card>
 			<FieldDescription className="px-6 text-center">
 				Продължавайки, се съгласявате с{" "}
-				<Link to="/terms">Условия за ползване</Link> и{" "}
-				<Link to="/privacy">Политика за поверителност</Link>.
+				<Link to="/hefest-frontend/terms">Условията за ползване</Link> и{" "}
+				<Link to="/hefest-frontend/privacy">Политиката за поверителност</Link>.
 			</FieldDescription>
 		</div>
 	);

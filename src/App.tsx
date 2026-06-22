@@ -2,6 +2,8 @@ import { Route, Routes } from "react-router-dom";
 import { ThemeProvider } from "./components/theme-provider";
 import Login from "./pages/Login";
 import SignupPage from "./pages/SignUp";
+import TermsAndConditions from "./components/terms";
+import PrivacyPolicy from "./components/privacy";
 
 export function App() {
 	return (
@@ -9,6 +11,8 @@ export function App() {
 			<Routes>
 				<Route element={<Login />} path="/hefest-frontend/" />
 				<Route element={<SignupPage />} path="/hefest-frontend/signup" />
+				<Route element={<TermsAndConditions />} path="/hefest-frontend/terms" />
+				<Route element={<PrivacyPolicy />} path="/hefest-frontend/privacy" />
 			</Routes>
 		</ThemeProvider>
 	);
