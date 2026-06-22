@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -15,6 +15,7 @@ import {
 	FieldSeparator,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 
 export function LoginForm({
 	className,
@@ -33,6 +34,8 @@ export function LoginForm({
 							<Field>
 								<Button variant="outline" type="button">
 									<svg
+										aria-label="Microsoft logo"
+										role="img"
 										width="800px"
 										height="800px"
 										viewBox="0 0 24 24"
@@ -48,6 +51,8 @@ export function LoginForm({
 								</Button>
 								<Button variant="outline" type="button">
 									<svg
+										aria-label="Google logo"
+										role="img"
 										xmlns="http://www.w3.org/2000/svg"
 										viewBox="0 0 24 24"
 										width="800px"
@@ -76,19 +81,19 @@ export function LoginForm({
 							<Field>
 								<div className="flex items-center">
 									<FieldLabel htmlFor="password">Парола</FieldLabel>
-									<a
-										href="#"
+									<Link
+										to="/forgot-password"
 										className="ml-auto text-sm underline-offset-4 hover:underline"
 									>
 										Забравена парола?
-									</a>
+									</Link>
 								</div>
 								<Input id="password" type="password" required />
 							</Field>
 							<Field>
 								<Button type="submit">Влезте</Button>
 								<FieldDescription className="text-center">
-									Нямате акаунт? <a href="#">Регистрирайте се</a>
+									Нямате акаунт? <Link to="/signup">Регистрирайте се</Link>
 								</FieldDescription>
 							</Field>
 						</FieldGroup>
@@ -96,8 +101,9 @@ export function LoginForm({
 				</CardContent>
 			</Card>
 			<FieldDescription className="px-6 text-center">
-				Продължавайки, се съгласявате с <a href="#">Условия за ползване</a> и{" "}
-				<a href="#">Политика за поверителност</a>.
+				Продължавайки, се съгласявате с{" "}
+				<Link to="/terms">Условия за ползване</Link> и{" "}
+				<Link to="/privacy">Политика за поверителност</Link>.
 			</FieldDescription>
 		</div>
 	);

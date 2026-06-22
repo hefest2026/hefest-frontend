@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -14,6 +14,7 @@ import {
 	FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 
 export function SignupForm({
 	className,
@@ -68,7 +69,7 @@ export function SignupForm({
 							<Field>
 								<Button type="submit">Създай акаунта</Button>
 								<FieldDescription className="text-center">
-									Вече имате акаунт? <a href="#">Влезте</a>
+									Вече имате акаунт? <Link to="/login">Влезте</Link>
 								</FieldDescription>
 							</Field>
 						</FieldGroup>
@@ -77,8 +78,8 @@ export function SignupForm({
 			</Card>
 			<FieldDescription className="px-6 text-center">
 				С кликване на "Продължи", вие се съгласявате с нашите{" "}
-				<a href="#">Условия за ползване</a> и{" "}
-				<a href="#">Политика за поверителност</a>.
+				<Link to="/terms">Условия за ползване</Link> и{" "}
+				<Link to="/privacy">Политика за поверителност</Link>.
 			</FieldDescription>
 		</div>
 	);
