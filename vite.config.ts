@@ -11,5 +11,7 @@ export default defineConfig({
 			"@": path.resolve(__dirname, "./src"),
 		},
 	},
-	base: "hefest-frontend",
+	// Served behind Traefik under /hefest-frontend/ (the API owns the root
+	// namespace), so every asset URL must carry that prefix.
+	base: "/hefest-frontend/",
 });
