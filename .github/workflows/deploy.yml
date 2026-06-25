@@ -1,0 +1,83 @@
+name: Deploy
+
+# Triggers:
+#   - push to main (post-merge) -> deploys origin/main
+#   - PR dev->main updated/opened (CI ran on the dev head) -> deploys origin/dev
+#
+# workflow_run branches filter matches the HEAD branch of the triggering event,
+# so we need both "main" (push) and "dev" (pull_request head) listed.
+# The job-level condition then narrows to only the two relevant combinations.
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main, dev]
+
+# Never run two staging deploys at once; let an in-flight deploy finish.
+concurrency:
+  group: deploy-staging
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy to staging
+    runs-on: ubuntu-latest
+    # Fire on: green CI after a push to main, OR green CI after a PR whose head is dev.
+    if: >-
+      github.event.workflow_run.conclusion == 'success' && (
+        (github.event.workflow_run.event == 'push'         && github.event.workflow_run.head_branch == 'main') ||
+        (github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.head_branch == 'dev')
+      )
+    environment: staging
+    steps:
+      - name: Resolve deploy ref
+        id: ref
+        run: |
+          if [ "${{ github.event.workflow_run.head_branch }}" = "main" ]; then
+            echo "value=origin/main" >> $GITHUB_OUTPUT
+          else
+            echo "value=origin/dev" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Pull and rebuild on the host
+        uses: appleboy/ssh-action@v1.2.0
+        env:
+          DEPLOY_REF: ${{ steps.ref.outputs.value }}
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: ${{ secrets.DEPLOY_PORT || '22' }}
+          envs: DEPLOY_REF
+          script_stop: true
+          # COMPOSE_FILE makes every `docker compose` call use the staging stack
+          # (Traefik on :8067, Postgres/Redis not exposed). Updates the frontend
+          # source checkout, then rebuilds the stack from the compose repo.
+          script: |
+            set -euo pipefail
+            export COMPOSE_FILE=compose.staging.yml
+            cd /opt/hefest/hefest-frontend
+            git fetch --prune origin
+            git reset --hard "$DEPLOY_REF"
+            cd /opt/hefest/hefest-compose
+            docker compose up -d --build frontend
+            docker compose ps
+            docker image prune -f
+
+  verify:
+    name: Verify (post-deploy, staging)
+    needs: deploy
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - name: Wait for the SPA to be served
+        run: |
+          for i in $(seq 1 24); do
+            status=$(curl -sf -A "hefest-deploy/1.0" \
+              https://hefest.adviz.bg/hefest-frontend/health \
+              -o /dev/null -w "%{http_code}" || echo 000)
+            [ "$status" = "200" ] && echo "Frontend healthy" && exit 0
+            echo "Attempt $i: got $status, retrying in 10s..."
+            sleep 10
+          done
+          echo "Frontend did not become healthy in time" && exit 1

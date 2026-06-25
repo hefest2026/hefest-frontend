@@ -1,0 +1,10 @@
+# Keep the build context small — these are recreated inside the image.
+node_modules
+dist
+dist-ssr
+.git
+.github
+*.log
+.DS_Store
+.vscode
+.idea
