@@ -9,9 +9,11 @@ FROM oven/bun:1.3.9-alpine AS builder
 WORKDIR /app
 
 # Install deps in a layer keyed only on the lockfiles so source changes don't
-# bust the dependency cache.
+# bust the dependency cache. --ignore-scripts skips the `prepare` lifecycle hook
+# (husky git-hooks install), which has no purpose in a build image and whose
+# .husky/ dir isn't present in this layer anyway.
 COPY package.json bun.lock ./
-RUN bun install --frozen-lockfile
+RUN bun install --frozen-lockfile --ignore-scripts
 
 # Build the production bundle (tsc -b && vite build -> /app/dist).
 COPY . .
