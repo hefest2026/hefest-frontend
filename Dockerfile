@@ -27,4 +27,4 @@ COPY --from=builder /app/dist /usr/share/nginx/html/hefest-frontend
 EXPOSE 80
 
 HEALTHCHECK --interval=10s --timeout=5s --retries=5 --start-period=10s \
-    CMD wget -qO- http://localhost/hefest-frontend/health || exit 1
+    CMD wget -qO- http://127.0.0.1/hefest-frontend/health || exit 1
