@@ -12,7 +12,7 @@
 		"type-check": "tsc -p tsconfig.app.json --noEmit && tsc -p tsconfig.node.json --noEmit",
 		"lint": "biome check .",
 		"format": "biome check --write .",
-		"format:check": "biome format . --check",
+		"format:check": "biome format .",
 		"preview": "vite preview",
 		"prepare": "node .husky/install.mjs"
 	},
