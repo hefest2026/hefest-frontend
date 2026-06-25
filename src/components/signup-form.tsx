@@ -26,8 +26,8 @@ export function SignupForm({
 			<Card>
 				<CardHeader className="text-center">
 					<CardTitle className="text-xl">Регистрирайте се</CardTitle>
-						<Field>
-					<div className="grid grid-cols-2 gap-2">
+					<Field>
+						<div className="grid grid-cols-2 gap-2">
 							<Button variant="secondary" type="button" className="">
 								<svg
 									aria-label="Microsoft logo"
@@ -59,8 +59,8 @@ export function SignupForm({
 									/>
 								</svg>
 							</Button>
-					</div>
-						</Field>
+						</div>
+					</Field>
 					<FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
 						или
 					</FieldSeparator>
