@@ -333,7 +333,7 @@ export const EventManager = () => {
       </main>
 
       {/* 2. FOOTER */}
-      <footer className="mx-auto w-full flex-1 border-t border-gray-200 bg-white px-4 py-8 text-gray-600">
+      <footer className="mt-10mx-auto w-full flex-1 border-t border-gray-200 bg-white px-4 py-8 text-gray-600">
         <div className="max-w-6xl px-4 py-10">
           <div className="ml-10 grid grid-cols-1 place-items-center gap-8 md:grid-cols-4">
             {/* Branding Column */}

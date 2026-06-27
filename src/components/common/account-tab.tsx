@@ -2,9 +2,9 @@ import { Button } from "@/components/ui/button"
 
 export const AccountTab = () => {
   return (
-    <div className="space-y-6">
+    <div className="mt-6 space-y-6">
       <h2 className="text-xl font-medium text-gray-900">
-        Профил на организатора
+        Редактиране на профила
       </h2>
 
       {/* User Info Card */}
@@ -14,12 +14,10 @@ export const AccountTab = () => {
         </div>
         <div className="flex-1 text-center sm:text-left">
           <h3 className="text-lg font-medium text-gray-900">Иван Петров</h3>
-          <p className="text-sm text-gray-500">
-            ivan.petrov@example.com · Член от 2024
-          </p>
-          <span className="mt-2 inline-block border border-green-200 bg-green-50 px-2 py-0.5 text-xs font-medium text-green-700">
+          <p className="text-sm text-gray-500">ivan.petrov@example.com</p>
+          {/* <span className="mt-2 inline-block border border-green-200 bg-green-50 px-2 py-0.5 text-xs font-medium text-green-700">
             Проверен Организатор
-          </span>
+          </span> */}
         </div>
         <Button variant="outline" size="sm">
           Редактиране
