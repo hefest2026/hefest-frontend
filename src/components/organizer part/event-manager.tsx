@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { PublishConfirmation } from "../components/event-confirmation"
-import { EventOrganizerPanel } from "../components/event-draft"
+import { PublishConfirmation } from "../organizer part/event-confirmation"
+import { EventOrganizerPanel } from "../organizer part/event-draft"
 
 interface BaseEvent {
   id: string

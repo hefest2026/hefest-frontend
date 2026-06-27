@@ -1,10 +1,11 @@
 import { Route, Routes } from "react-router-dom"
-import PrivacyPolicy from "./components/privacy"
-import TermsAndConditions from "./components/terms"
-import { ThemeProvider } from "./components/theme-provider"
+import PrivacyPolicy from "./components/common/privacy"
+import TermsAndConditions from "./components/common/terms"
+import { ThemeProvider } from "./components/common/theme-provider"
 import Login from "./pages/Login"
 import SignupPage from "./pages/SignUp"
-import { EventManager } from "./components/event-manager"
+import { EventManager } from "./components/organizer part/event-manager"
+import { StudentEventsPage } from "./pages/Student-Event_Page"
 
 export function App() {
   return (
@@ -17,6 +18,10 @@ export function App() {
         <Route
           element={<EventManager />}
           path="/hefest-frontend/events/manager"
+        />
+        <Route
+          element={<StudentEventsPage />}
+          path="/hefest-frontend/events/student"
         />
       </Routes>
     </ThemeProvider>
