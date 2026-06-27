@@ -40,7 +40,7 @@ const MOCK_GLOBAL_EVENTS: PublishedEvent[] = [
     location: "София Тех Парк, Сграда Инкубатор",
     status: "PUBLISHED",
     published_at: "2026-06-20T12:00:00",
-    participants: [12, 13, 14].map((id) => `student-${id}`), // Mock student IDs
+    participants: ["student-12", "student-13", "student-14", "student-15"],
     waitlist: [],
   },
   {
@@ -50,12 +50,18 @@ const MOCK_GLOBAL_EVENTS: PublishedEvent[] = [
       "Дискусия и демонстрации на тема как генеративният изкуствен интелект променя UI/UX процесите.",
     starts_at: "2026-07-22T19:00:00",
     ends_at: "2026-07-22T21:30:00",
-    capacity: 30,
-    location: "ул. „Генерал Гурко“ 12, София",
+    capacity: 5,
+    location: "'ул. „Генерал Гурко' 12, София",
     status: "PUBLISHED",
     published_at: "2026-06-24T09:15:00",
-    participants: [14, 154, 54, 23, 67].map((id) => `student-${id}`), // Mock student IDs
-    waitlist: [],
+    participants: [
+      "student-14",
+      "student-154",
+      "student-54",
+      "student-23",
+      "student-67",
+    ],
+    waitlist: ["student-99", "student-100"],
   },
 ]
 
@@ -265,84 +271,114 @@ export const StudentEventsList: React.FC<StudentEventsPageProps> = ({
     "all-events"
   )
 
-  const [publishedEvents] = useState<PublishedEvent[]>([])
-  const [globalEvents] = useState<PublishedEvent[]>(MOCK_GLOBAL_EVENTS)
+  const [publishedEvents, setPublishedEvents] =
+    useState<PublishedEvent[]>(events)
+  const [globalEvents, setGlobalEvents] =
+    useState<PublishedEvent[]>(MOCK_GLOBAL_EVENTS)
   const allAvailablePublishedEvents = [...publishedEvents, ...globalEvents]
-  const [localEvents, setLocalEvents] = useState<PublishedEvent[]>(events)
 
   const handleRegister = (eventId: string) => {
-    setLocalEvents(
-      events.map((event) =>
-        event.id === eventId
-          ? {
-              ...event,
-              participants: [...event.participants, currentStudentId],
-            }
-          : event
+    if (publishedEvents.some((e) => e.id === eventId)) {
+      setPublishedEvents(
+        publishedEvents.map((event) =>
+          event.id === eventId
+            ? {
+                ...event,
+                participants: [...event.participants, currentStudentId],
+              }
+            : event
+        )
       )
-    )
+    } else if (globalEvents.some((e) => e.id === eventId)) {
+      setGlobalEvents(
+        globalEvents.map((event) =>
+          event.id === eventId
+            ? {
+                ...event,
+                participants: [...event.participants, currentStudentId],
+              }
+            : event
+        )
+      )
+    }
+
     onRegister(eventId, currentStudentId)
   }
 
   const handleJoinWaitlist = (eventId: string) => {
-    setLocalEvents(
-      events.map((event) =>
-        event.id === eventId
-          ? {
-              ...event,
-              waitlist: [...event.waitlist, currentStudentId],
-            }
-          : event
+    if (publishedEvents.some((e) => e.id === eventId)) {
+      setPublishedEvents(
+        publishedEvents.map((event) =>
+          event.id === eventId
+            ? {
+                ...event,
+                waitlist: [...event.waitlist, currentStudentId],
+              }
+            : event
+        )
       )
-    )
+    } else if (globalEvents.some((e) => e.id === eventId)) {
+      setGlobalEvents(
+        globalEvents.map((event) =>
+          event.id === eventId
+            ? {
+                ...event,
+                waitlist: [...event.waitlist, currentStudentId],
+              }
+            : event
+        )
+      )
+    }
+
     onJoinWaitlist(eventId, currentStudentId)
   }
 
   const handleCancel = (eventId: string) => {
-    setLocalEvents(
-      events.map((event) => {
-        if (event.id === eventId) {
-          const isParticipating = event.participants.includes(currentStudentId)
-          const isWaitlisted = event.waitlist.includes(currentStudentId)
+    const updateCancelLogic = (event: PublishedEvent) => {
+      if (event.id === eventId) {
+        const isParticipating = event.participants.includes(currentStudentId)
+        const isWaitlisted = event.waitlist.includes(currentStudentId)
 
-          if (isParticipating) {
-            // Remove from participants
-            const newParticipants = event.participants.filter(
-              (id) => id !== currentStudentId
-            )
+        if (isParticipating) {
+          const newParticipants = event.participants.filter(
+            (id) => id !== currentStudentId
+          )
 
-            // Move first person from waitlist to participants if available
-            if (event.waitlist.length > 0) {
-              const firstWaitlisted = event.waitlist[0]
-              return {
-                ...event,
-                participants: [...newParticipants, firstWaitlisted],
-                waitlist: event.waitlist.slice(1),
-              }
-            }
-
+          if (event.waitlist.length > 0) {
+            const firstWaitlisted = event.waitlist[0]
             return {
               ...event,
-              participants: newParticipants,
+              participants: [...newParticipants, firstWaitlisted],
+              waitlist: event.waitlist.slice(1),
             }
           }
 
-          if (isWaitlisted) {
-            // Remove from waitlist
-            return {
-              ...event,
-              waitlist: event.waitlist.filter((id) => id !== currentStudentId),
-            }
+          return {
+            ...event,
+            participants: newParticipants,
           }
         }
 
-        return event
-      })
-    )
+        if (isWaitlisted) {
+          return {
+            ...event,
+            waitlist: event.waitlist.filter((id) => id !== currentStudentId),
+          }
+        }
+      }
+      return event
+    }
+
+    if (publishedEvents.some((e) => e.id === eventId)) {
+      setPublishedEvents(publishedEvents.map(updateCancelLogic))
+    } else if (globalEvents.some((e) => e.id === eventId)) {
+      setGlobalEvents(globalEvents.map(updateCancelLogic))
+    }
+
     onCancel(eventId, currentStudentId)
   }
 
-  if (events.length === 0) {
+  if (allAvailablePublishedEvents.length === 0) {
     return (
       <div className="mx-auto max-w-4xl p-4">
         <h1 className="mb-8 text-2xl font-medium">Публикувани събития</h1>
@@ -427,7 +463,7 @@ export const StudentEventsList: React.FC<StudentEventsPageProps> = ({
               <h1 className="mb-8 text-2xl font-medium">Публикувани събития</h1>
 
               <div className="space-y-4">
-                {events.map((event) => (
+                {allAvailablePublishedEvents.map((event) => (
                   <EventCard
                     key={event.id}
                     event={event}
@@ -437,39 +473,6 @@ export const StudentEventsList: React.FC<StudentEventsPageProps> = ({
                     onCancel={handleCancel}
                   />
                 ))}
-              </div>
-
-              {/* Student Stats */}
-              <div className="mt-8 border border-gray-200 bg-white p-5">
-                <h3 className="mb-4 font-medium">Твоята статистика</h3>
-                <div className="grid grid-cols-3 gap-4">
-                  <div>
-                    <p className="text-xs text-gray-600">Участвам в</p>
-                    <p className="text-lg font-semibold text-gray-900">
-                      {
-                        localEvents.filter((e) =>
-                          e.participants.includes(currentStudentId)
-                        ).length
-                      }
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-600">Чакам място за</p>
-                    <p className="text-lg font-semibold text-gray-900">
-                      {
-                        localEvents.filter((e) =>
-                          e.waitlist.includes(currentStudentId)
-                        ).length
-                      }
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-600">Налични събития</p>
-                    <p className="text-lg font-semibold text-gray-900">
-                      {localEvents.length}
-                    </p>
-                  </div>
-                </div>
               </div>
             </div>
           )}
