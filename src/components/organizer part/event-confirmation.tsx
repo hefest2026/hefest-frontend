@@ -1,25 +1,15 @@
 import type React from "react";
+import type { EventResponse } from "@/api/types";
 import { Button } from "@/components/ui/button";
 
-interface DraftEvent {
-  id: string;
-  title: string;
-  description: string;
-  starts_at: string;
-  ends_at?: string;
-  capacity: number;
-  location?: string;
-  status: "DRAFT";
-}
-
 interface PublishConfirmationProps {
-  event: DraftEvent;
+  event: EventResponse;
   onPublish: (eventId: string) => void;
   onCancel: () => void;
   isLoading?: boolean;
 }
 
-const formatDateTimeDisplay = (isoString: string): string => {
+const formatDateTimeDisplay = (isoString: string | null): string => {
   if (!isoString) return "";
 
   const match = isoString.match(/(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);
@@ -29,7 +19,10 @@ const formatDateTimeDisplay = (isoString: string): string => {
   return `${day}/${month}/${year} ${hours}:${minutes}`;
 };
 
-const calculateDuration = (startISO: string, endISO?: string): string => {
+const calculateDuration = (
+  startISO: string,
+  endISO?: string | null,
+): string => {
   if (!endISO) return "Не е зададено";
 
   try {

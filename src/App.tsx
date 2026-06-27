@@ -1,4 +1,5 @@
 import { Route, Routes } from "react-router-dom";
+import { ProtectedRoute } from "./auth/ProtectedRoute";
 import PrivacyPolicy from "./components/common/privacy";
 import TermsAndConditions from "./components/common/terms";
 import { ThemeProvider } from "./components/common/theme-provider";
@@ -6,6 +7,7 @@ import { EventManager } from "./components/organizer part/event-manager";
 import Login from "./pages/Login";
 import SignupPage from "./pages/SignUp";
 import { StudentEventsPage } from "./pages/Student-Event_Page";
+import VerifyEmailPage from "./pages/VerifyEmail";
 
 export function App() {
   return (
@@ -13,16 +15,22 @@ export function App() {
       <Routes>
         <Route element={<Login />} path="/hefest-frontend/" />
         <Route element={<SignupPage />} path="/hefest-frontend/signup" />
+        <Route
+          element={<VerifyEmailPage />}
+          path="/hefest-frontend/verify-email"
+        />
         <Route element={<TermsAndConditions />} path="/hefest-frontend/terms" />
         <Route element={<PrivacyPolicy />} path="/hefest-frontend/privacy" />
-        <Route
-          element={<EventManager />}
-          path="/hefest-frontend/events/manager"
-        />
-        <Route
-          element={<StudentEventsPage />}
-          path="/hefest-frontend/events/student"
-        />
+        <Route element={<ProtectedRoute />}>
+          <Route
+            element={<EventManager />}
+            path="/hefest-frontend/events/manager"
+          />
+          <Route
+            element={<StudentEventsPage />}
+            path="/hefest-frontend/events/student"
+          />
+        </Route>
       </Routes>
     </ThemeProvider>
   );

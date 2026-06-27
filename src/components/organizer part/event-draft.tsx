@@ -1,19 +1,13 @@
 import type React from "react";
 import { useState } from "react";
+import type {
+  EventCreateRequest,
+  EventResponse,
+  EventUpdateRequest,
+} from "@/api/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-
-interface DraftEvent {
-  id: string;
-  title: string;
-  description: string;
-  starts_at: string;
-  ends_at?: string;
-  capacity: number;
-  location?: string;
-  status: "DRAFT";
-}
 
 interface FormState {
   title: string;
@@ -27,9 +21,13 @@ interface FormState {
 }
 
 interface EventOrganizerPanelProps {
-  events?: DraftEvent[];
-  onEventsChange?: (events: DraftEvent[]) => void;
-  onPublishRequest?: (event: DraftEvent) => void;
+  /** The organizer's DRAFT events, straight from the API. */
+  drafts: EventResponse[];
+  onCreate: (data: EventCreateRequest) => void;
+  onUpdate: (eventId: string, data: EventUpdateRequest) => void;
+  onPublish: (event: EventResponse) => void;
+  onDelete: (eventId: string) => void;
+  isSubmitting: boolean;
 }
 
 const initialFormState: FormState = {
@@ -72,33 +70,26 @@ const formatDateInput = (value: string): string => {
   return `${numbers.slice(0, 2)}/${numbers.slice(2, 4)}/${numbers.slice(4, 8)}`;
 };
 
-const formatDateTimeDisplay = (isoString: string): string => {
+const formatDateTimeDisplay = (isoString: string | null): string => {
   if (!isoString) return "";
-
   const match = isoString.match(/(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);
   if (!match) return "";
-
   const [, year, month, day, hours, minutes] = match;
   return `${day}/${month}/${year} ${hours}:${minutes}`;
 };
 
 export const EventOrganizerPanel: React.FC<EventOrganizerPanelProps> = ({
-  events = [], // 1. Read directly from the prop, defaults to an empty array
-  onEventsChange,
-  onPublishRequest,
+  drafts,
+  onCreate,
+  onUpdate,
+  onPublish,
+  onDelete,
+  isSubmitting,
 }) => {
-  // 2. REMOVED the local state line: const [events, setEvents] = useState(...)
-
   const [form, setForm] = useState<FormState>(initialFormState);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // 3. Update this function to ONLY talk to the parent component
-  const updateEvents = (newEvents: DraftEvent[]) => {
-    if (onEventsChange) {
-      onEventsChange(newEvents);
-    }
-  };
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
 
@@ -107,6 +98,9 @@ export const EventOrganizerPanel: React.FC<EventOrganizerPanelProps> = ({
     }
     if (!form.description.trim()) {
       newErrors.description = "Описанието е задължително";
+    }
+    if (!form.location.trim()) {
+      newErrors.location = "Местоположението е задължително";
     }
     if (!form.starts_date || form.starts_date.length < 10) {
       newErrors.starts_date = "Началната дата е задължителна (dd/mm/yyyy)";
@@ -150,41 +144,37 @@ export const EventOrganizerPanel: React.FC<EventOrganizerPanelProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!validate()) {
       return;
     }
 
-    const capacity = parseInt(form.capacity, 10);
     const startsAt = `${ddmmyyyyToYYYYmmdd(form.starts_date)}T${form.starts_time}:00`;
     const endsAt =
       form.ends_date && form.ends_date.length === 10 && form.ends_time
         ? `${ddmmyyyyToYYYYmmdd(form.ends_date)}T${form.ends_time}:00`
-        : undefined;
+        : null;
 
-    const newEvent: DraftEvent = {
-      id: editingId || Date.now().toString(),
+    const payload = {
       title: form.title.trim(),
       description: form.description.trim(),
       starts_at: startsAt,
       ends_at: endsAt,
-      capacity,
-      location: form.location.trim() || undefined,
-      status: "DRAFT",
+      location: form.location.trim(),
+      capacity: parseInt(form.capacity, 10),
     };
 
     if (editingId) {
-      updateEvents(events.map((e) => (e.id === editingId ? newEvent : e)));
+      onUpdate(editingId, payload satisfies EventUpdateRequest);
       setEditingId(null);
     } else {
-      updateEvents([newEvent, ...events]);
+      onCreate(payload satisfies EventCreateRequest);
     }
 
     setForm(initialFormState);
     setErrors({});
   };
 
-  const handleEdit = (event: DraftEvent) => {
+  const handleEdit = (event: EventResponse) => {
     setEditingId(event.id);
     const [startsDate, startsTime] = event.starts_at.split("T");
     const [endsDate, endsTime] = event.ends_at
@@ -199,21 +189,12 @@ export const EventOrganizerPanel: React.FC<EventOrganizerPanelProps> = ({
       ends_date: endsDate ? yyyymmddToDdmmyyyy(endsDate) : "",
       ends_time: endsTime ? endsTime.slice(0, 5) : "",
       capacity: event.capacity.toString(),
-      location: event.location || "",
+      location: event.location,
     });
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const handleDelete = (id: string) => {
-    updateEvents(events.filter((e) => e.id !== id));
-    if (editingId === id) {
-      setEditingId(null);
-      setForm(initialFormState);
-      setErrors({});
-    }
-  };
-
-  const handleCancel = () => {
+  const handleCancelEdit = () => {
     setEditingId(null);
     setForm(initialFormState);
     setErrors({});
@@ -297,6 +278,7 @@ export const EventOrganizerPanel: React.FC<EventOrganizerPanelProps> = ({
                 <div className="w-32">
                   <input
                     type="time"
+                    aria-label="Начален час"
                     value={form.starts_time}
                     onChange={(e) =>
                       setForm({ ...form, starts_time: e.target.value })
@@ -344,6 +326,7 @@ export const EventOrganizerPanel: React.FC<EventOrganizerPanelProps> = ({
                 <div className="w-32">
                   <input
                     type="time"
+                    aria-label="Краен час"
                     value={form.ends_time}
                     onChange={(e) =>
                       setForm({ ...form, ends_time: e.target.value })
@@ -388,7 +371,7 @@ export const EventOrganizerPanel: React.FC<EventOrganizerPanelProps> = ({
                 htmlFor="event-location"
                 className="mb-2 block text-sm font-medium"
               >
-                Местоположение или URL
+                Местоположение или URL *
               </label>
               <Input
                 id="event-location"
@@ -396,17 +379,25 @@ export const EventOrganizerPanel: React.FC<EventOrganizerPanelProps> = ({
                 value={form.location}
                 onChange={(e) => setForm({ ...form, location: e.target.value })}
                 placeholder="Адрес на мястото или видео връзка"
+                aria-invalid={!!errors.location}
               />
+              {errors.location && (
+                <p className="mt-2 text-xs text-red-600">{errors.location}</p>
+              )}
             </div>
           </div>
 
           <div className="flex justify-end gap-3 pt-2">
             {editingId && (
-              <Button type="button" onClick={handleCancel} variant="outline">
+              <Button
+                type="button"
+                onClick={handleCancelEdit}
+                variant="outline"
+              >
                 Отказ
               </Button>
             )}
-            <Button type="submit">
+            <Button type="submit" disabled={isSubmitting}>
               {editingId
                 ? "Актуализиране на събитие"
                 : "Създаване на ново събитие"}
@@ -415,14 +406,14 @@ export const EventOrganizerPanel: React.FC<EventOrganizerPanelProps> = ({
         </form>
       </div>
 
-      {events.length > 0 && (
+      {drafts.length > 0 && (
         <div>
           <h2 className="mb-4 text-lg font-medium">
-            Чернови събития ({events.length})
+            Чернови събития ({drafts.length})
           </h2>
 
           <div className="space-y-4">
-            {events.map((event) => (
+            {drafts.map((event) => (
               <div
                 key={event.id}
                 className="border border-gray-200 bg-white p-5"
@@ -432,15 +423,7 @@ export const EventOrganizerPanel: React.FC<EventOrganizerPanelProps> = ({
                     <h3 className="mb-1 text-base font-medium">
                       {event.title}
                     </h3>
-                    <p
-                      className="text-sm text-gray-600"
-                      style={{
-                        wordWrap: "break-word",
-                        overflowWrap: "break-word",
-                        wordBreak: "break-word",
-                        whiteSpace: "normal",
-                      }}
-                    >
+                    <p className="text-sm break-words text-gray-600">
                       {event.description}
                     </p>
                   </div>
@@ -456,7 +439,6 @@ export const EventOrganizerPanel: React.FC<EventOrganizerPanelProps> = ({
                       {formatDateTimeDisplay(event.starts_at)}
                     </p>
                   </div>
-
                   {event.ends_at && (
                     <div>
                       <p className="mb-1 text-xs text-gray-600">Край</p>
@@ -465,7 +447,6 @@ export const EventOrganizerPanel: React.FC<EventOrganizerPanelProps> = ({
                       </p>
                     </div>
                   )}
-
                   <div>
                     <p className="mb-1 text-xs text-gray-600">Капацитет</p>
                     <p className="text-sm font-medium">
@@ -473,25 +454,22 @@ export const EventOrganizerPanel: React.FC<EventOrganizerPanelProps> = ({
                       {event.capacity === 1 ? "човек" : "човека"}
                     </p>
                   </div>
-
-                  {event.location && (
-                    <div>
-                      <p className="mb-1 text-xs text-gray-600">
-                        Местоположение
-                      </p>
-                      <p className="text-sm font-medium wrap-break-word">
-                        {event.location}
-                      </p>
-                    </div>
-                  )}
+                  <div>
+                    <p className="mb-1 text-xs text-gray-600">Местоположение</p>
+                    <p className="text-sm font-medium break-words">
+                      {event.location}
+                    </p>
+                  </div>
                 </div>
 
                 <div className="flex justify-end gap-2">
-                  {onPublishRequest && (
-                    <Button onClick={() => onPublishRequest(event)} size="sm">
-                      Публикуване
-                    </Button>
-                  )}
+                  <Button
+                    onClick={() => onPublish(event)}
+                    size="sm"
+                    disabled={isSubmitting}
+                  >
+                    Публикуване
+                  </Button>
                   <Button
                     onClick={() => handleEdit(event)}
                     variant="outline"
@@ -500,12 +478,13 @@ export const EventOrganizerPanel: React.FC<EventOrganizerPanelProps> = ({
                     Редактиране
                   </Button>
                   <Button
-                    onClick={() => handleDelete(event.id)}
+                    onClick={() => onDelete(event.id)}
                     variant="outline"
                     size="sm"
                     className="text-red-600"
+                    disabled={isSubmitting}
                   >
-                    Изтриване
+                    Отказ
                   </Button>
                 </div>
               </div>
@@ -514,7 +493,7 @@ export const EventOrganizerPanel: React.FC<EventOrganizerPanelProps> = ({
         </div>
       )}
 
-      {events.length === 0 && !editingId && (
+      {drafts.length === 0 && !editingId && (
         <div className="py-8 text-center text-gray-600">
           <p>
             Няма чернови на събитие все още. Създайте едно, за да започнете.
