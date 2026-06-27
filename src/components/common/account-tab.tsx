@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 
 export const AccountTab = () => {
   return (
@@ -88,5 +88,5 @@ export const AccountTab = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};

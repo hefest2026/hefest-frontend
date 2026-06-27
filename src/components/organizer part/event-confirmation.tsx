@@ -1,53 +1,53 @@
-import type React from "react"
-import { Button } from "@/components/ui/button"
+import type React from "react";
+import { Button } from "@/components/ui/button";
 
 interface DraftEvent {
-  id: string
-  title: string
-  description: string
-  starts_at: string
-  ends_at?: string
-  capacity: number
-  location?: string
-  status: "DRAFT"
+  id: string;
+  title: string;
+  description: string;
+  starts_at: string;
+  ends_at?: string;
+  capacity: number;
+  location?: string;
+  status: "DRAFT";
 }
 
 interface PublishConfirmationProps {
-  event: DraftEvent
-  onPublish: (eventId: string) => void
-  onCancel: () => void
-  isLoading?: boolean
+  event: DraftEvent;
+  onPublish: (eventId: string) => void;
+  onCancel: () => void;
+  isLoading?: boolean;
 }
 
 const formatDateTimeDisplay = (isoString: string): string => {
-  if (!isoString) return ""
+  if (!isoString) return "";
 
-  const match = isoString.match(/(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/)
-  if (!match) return ""
+  const match = isoString.match(/(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);
+  if (!match) return "";
 
-  const [, year, month, day, hours, minutes] = match
-  return `${day}/${month}/${year} ${hours}:${minutes}`
-}
+  const [, year, month, day, hours, minutes] = match;
+  return `${day}/${month}/${year} ${hours}:${minutes}`;
+};
 
 const calculateDuration = (startISO: string, endISO?: string): string => {
-  if (!endISO) return "Не е зададено"
+  if (!endISO) return "Не е зададено";
 
   try {
-    const start = new Date(startISO)
-    const end = new Date(endISO)
-    const diffMinutes = Math.round((end.getTime() - start.getTime()) / 60000)
+    const start = new Date(startISO);
+    const end = new Date(endISO);
+    const diffMinutes = Math.round((end.getTime() - start.getTime()) / 60000);
 
     if (diffMinutes < 60) {
-      return `${diffMinutes} мин.`
+      return `${diffMinutes} мин.`;
     }
 
-    const hours = Math.floor(diffMinutes / 60)
-    const mins = diffMinutes % 60
-    return mins > 0 ? `${hours}ч ${mins}мин.` : `${hours}ч`
+    const hours = Math.floor(diffMinutes / 60);
+    const mins = diffMinutes % 60;
+    return mins > 0 ? `${hours}ч ${mins}мин.` : `${hours}ч`;
   } catch {
-    return "Невалидни дати"
+    return "Невалидни дати";
   }
-}
+};
 
 export const PublishConfirmation: React.FC<PublishConfirmationProps> = ({
   event,
@@ -56,8 +56,8 @@ export const PublishConfirmation: React.FC<PublishConfirmationProps> = ({
   isLoading = false,
 }) => {
   const handlePublish = () => {
-    onPublish(event.id)
-  }
+    onPublish(event.id);
+  };
 
   return (
     <div
@@ -331,5 +331,5 @@ export const PublishConfirmation: React.FC<PublishConfirmationProps> = ({
         </div>
       </div>
     </div>
-  )
-}
+  );
+};

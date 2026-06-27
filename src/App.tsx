@@ -1,11 +1,11 @@
-import { Route, Routes } from "react-router-dom"
-import PrivacyPolicy from "./components/common/privacy"
-import TermsAndConditions from "./components/common/terms"
-import { ThemeProvider } from "./components/common/theme-provider"
-import Login from "./pages/Login"
-import SignupPage from "./pages/SignUp"
-import { EventManager } from "./components/organizer part/event-manager"
-import { StudentEventsPage } from "./pages/Student-Event_Page"
+import { Route, Routes } from "react-router-dom";
+import PrivacyPolicy from "./components/common/privacy";
+import TermsAndConditions from "./components/common/terms";
+import { ThemeProvider } from "./components/common/theme-provider";
+import { EventManager } from "./components/organizer part/event-manager";
+import Login from "./pages/Login";
+import SignupPage from "./pages/SignUp";
+import { StudentEventsPage } from "./pages/Student-Event_Page";
 
 export function App() {
   return (
@@ -25,7 +25,7 @@ export function App() {
         />
       </Routes>
     </ThemeProvider>
-  )
+  );
 }
 
-export default App
+export default App;

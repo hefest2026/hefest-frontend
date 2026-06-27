@@ -1,29 +1,29 @@
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { PublishConfirmation } from "../organizer part/event-confirmation"
-import { AccountTab } from "../common/account-tab"
-import { EventOrganizerPanel } from "../organizer part/event-draft"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { AccountTab } from "../common/account-tab";
+import { PublishConfirmation } from "../organizer part/event-confirmation";
+import { EventOrganizerPanel } from "../organizer part/event-draft";
 
 interface BaseEvent {
-  id: string
-  title: string
-  description: string
-  starts_at: string
-  ends_at?: string
-  capacity: number
-  location?: string
+  id: string;
+  title: string;
+  description: string;
+  starts_at: string;
+  ends_at?: string;
+  capacity: number;
+  location?: string;
 }
 
 interface DraftEvent extends BaseEvent {
-  status: "DRAFT"
+  status: "DRAFT";
 }
 
 interface PublishedEvent extends BaseEvent {
-  status: "PUBLISHED"
-  published_at: string
+  status: "PUBLISHED";
+  published_at: string;
 }
 
-type Event = DraftEvent | PublishedEvent
+type Event = DraftEvent | PublishedEvent;
 
 const MOCK_GLOBAL_EVENTS: PublishedEvent[] = [
   {
@@ -50,36 +50,36 @@ const MOCK_GLOBAL_EVENTS: PublishedEvent[] = [
     status: "PUBLISHED",
     published_at: "2026-06-24T09:15:00",
   },
-]
+];
 
 export const EventManager = () => {
   // Navigation State updated to include 'account'
   const [activeTab, setActiveTab] = useState<
     "manage" | "all-events" | "account"
-  >("manage")
+  >("manage");
 
-  const [draftEvents, setDraftEvents] = useState<DraftEvent[]>([])
-  const [publishedEvents, setPublishedEvents] = useState<PublishedEvent[]>([])
-  const [globalEvents] = useState<PublishedEvent[]>(MOCK_GLOBAL_EVENTS)
+  const [draftEvents, setDraftEvents] = useState<DraftEvent[]>([]);
+  const [publishedEvents, setPublishedEvents] = useState<PublishedEvent[]>([]);
+  const [globalEvents] = useState<PublishedEvent[]>(MOCK_GLOBAL_EVENTS);
 
   const [publishingEventId, setPublishingEventId] = useState<string | null>(
-    null
-  )
-  const [isPublishing, setIsPublishing] = useState(false)
+    null,
+  );
+  const [isPublishing, setIsPublishing] = useState(false);
 
   const handlePublish = (event: Event) => {
-    setPublishingEventId(event.id)
-  }
+    setPublishingEventId(event.id);
+  };
 
   const confirmPublish = async () => {
-    if (!publishingEventId) return
+    if (!publishingEventId) return;
 
-    setIsPublishing(true)
-    const eventToPublish = draftEvents.find((e) => e.id === publishingEventId)
+    setIsPublishing(true);
+    const eventToPublish = draftEvents.find((e) => e.id === publishingEventId);
 
     if (!eventToPublish) {
-      setIsPublishing(false)
-      return
+      setIsPublishing(false);
+      return;
     }
 
     try {
@@ -87,30 +87,30 @@ export const EventManager = () => {
         ...eventToPublish,
         status: "PUBLISHED",
         published_at: new Date().toISOString(),
-      }
+      };
 
-      setPublishedEvents((prevPublished) => [...prevPublished, publishedEvent])
+      setPublishedEvents((prevPublished) => [...prevPublished, publishedEvent]);
       setDraftEvents((prevDrafts) =>
-        prevDrafts.filter((e) => e.id !== publishingEventId)
-      )
-      setPublishingEventId(null)
+        prevDrafts.filter((e) => e.id !== publishingEventId),
+      );
+      setPublishingEventId(null);
     } catch (error) {
-      console.error("Error publishing event:", error)
+      console.error("Error publishing event:", error);
     } finally {
-      setIsPublishing(false)
+      setIsPublishing(false);
     }
-  }
+  };
 
   const cancelPublish = () => {
-    setPublishingEventId(null)
-  }
+    setPublishingEventId(null);
+  };
 
   const handleDeleteOwnPublished = (eventId: string) => {
-    setPublishedEvents((prev) => prev.filter((e) => e.id !== eventId))
-  }
+    setPublishedEvents((prev) => prev.filter((e) => e.id !== eventId));
+  };
 
-  const eventToPublish = draftEvents.find((e) => e.id === publishingEventId)
-  const allAvailablePublishedEvents = [...publishedEvents, ...globalEvents]
+  const eventToPublish = draftEvents.find((e) => e.id === publishingEventId);
+  const allAvailablePublishedEvents = [...publishedEvents, ...globalEvents];
 
   const formatDisplayDate = (isoString: string) => {
     try {
@@ -120,11 +120,11 @@ export const EventManager = () => {
         year: "numeric",
         hour: "2-digit",
         minute: "2-digit",
-      })
+      });
     } catch {
-      return isoString
+      return isoString;
     }
-  }
+  };
 
   return (
     <div className="flex min-h-screen flex-col bg-gray-50 text-gray-900">
@@ -132,9 +132,10 @@ export const EventManager = () => {
       <header className="sticky top-0 z-50 border-b border-gray-200 bg-white shadow-sm">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
           {/* Logo / Brand Name */}
-          <div
-            className="flex cursor-pointer items-center gap-2"
-            onClick={() => setActiveTab("manage")}
+          <button
+            type="button"
+            className="flex cursor-pointer items-center gap-2 border-none bg-transparent p-0 text-left"
+            onClick={() => setActiveTab("all-events")}
           >
             <svg
               className="h-6 w-6 text-black"
@@ -143,6 +144,7 @@ export const EventManager = () => {
               stroke="currentColor"
               strokeWidth={2}
             >
+              <title id="svg-title">EventHub Logo</title>
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -150,7 +152,7 @@ export const EventManager = () => {
               />
             </svg>
             <span className="text-lg font-bold tracking-tight">EventHub</span>
-          </div>
+          </button>
 
           {/* Moved Tab Navigation Menu */}
           <nav className="flex items-center gap-1">
@@ -192,6 +194,7 @@ export const EventManager = () => {
                 stroke="currentColor"
                 strokeWidth={2}
               >
+                <title id="svg-title">Profile</title>
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -266,8 +269,8 @@ export const EventManager = () => {
               <div className="grid gap-6">
                 {allAvailablePublishedEvents.map((event) => {
                   const isMyOwnEvent = publishedEvents.some(
-                    (e) => e.id === event.id
-                  )
+                    (e) => e.id === event.id,
+                  );
 
                   return (
                     <div
@@ -321,7 +324,7 @@ export const EventManager = () => {
                         </div>
                       )}
                     </div>
-                  )
+                  );
                 })}
               </div>
             )}
@@ -357,6 +360,7 @@ export const EventManager = () => {
               <ul className="space-y-2 text-xs">
                 <li>
                   <button
+                    type="button"
                     onClick={() => setActiveTab("manage")}
                     className="transition-colors hover:text-gray-900"
                   >
@@ -365,6 +369,7 @@ export const EventManager = () => {
                 </li>
                 <li>
                   <button
+                    type="button"
                     onClick={() => setActiveTab("all-events")}
                     className="transition-colors hover:text-gray-900"
                   >
@@ -373,6 +378,7 @@ export const EventManager = () => {
                 </li>
                 <li>
                   <button
+                    type="button"
                     onClick={() => setActiveTab("account")}
                     className="transition-colors hover:text-gray-900"
                   >
@@ -405,7 +411,10 @@ export const EventManager = () => {
                   </a>
                 </li>
                 <li>
-                  <a href="" className="transition-colors hover:text-gray-900">
+                  <a
+                    href="/hefest-frontend/helpdesk"
+                    className="transition-colors hover:text-gray-900"
+                  >
                     Помощен център / FAQ
                   </a>
                 </li>
@@ -430,6 +439,7 @@ export const EventManager = () => {
                     fill="currentColor"
                     viewBox="0 0 24 24"
                   >
+                    <title id="svg-title">EventHub's Facebook Profile</title>
                     <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" />
                   </svg>
                 </a>
@@ -445,6 +455,7 @@ export const EventManager = () => {
                     fill="currentColor"
                     viewBox="0 0 24 24"
                   >
+                    <title id="svg-title">EventHub's LinkedIn Profile</title>
                     <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
                   </svg>
                 </a>
@@ -460,6 +471,7 @@ export const EventManager = () => {
                     fill="currentColor"
                     viewBox="0 0 24 24"
                   >
+                    <title id="svg-title">EventHub's Twitter Profile</title>
                     <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                   </svg>
                 </a>
@@ -479,5 +491,5 @@ export const EventManager = () => {
         />
       )}
     </div>
-  )
-}
+  );
+};
