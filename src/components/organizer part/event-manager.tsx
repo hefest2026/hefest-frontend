@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { PublishConfirmation } from "../organizer part/event-confirmation"
+import { AccountTab } from "../common/account-tab"
 import { EventOrganizerPanel } from "../organizer part/event-draft"
 
 interface BaseEvent {
@@ -328,7 +329,7 @@ export const EventManager = () => {
         )}
 
         {/* TAB 3: ACCOUNT TAB */}
-        {activeTab === "account" && <div />}
+        {activeTab === "account" && <AccountTab />}
       </main>
 
       {/* 2. FOOTER */}
