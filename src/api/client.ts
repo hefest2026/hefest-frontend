@@ -5,7 +5,7 @@ import axios, {
 } from "axios";
 import { getAccessToken, setAccessToken } from "@/auth/token-store";
 import { API_BASE_URL } from "@/lib/env";
-import type { HTTPValidationError, TokenResponse } from "./types";
+import type { TokenResponse } from "./types";
 
 /** Shared axios instance. `withCredentials` lets the httpOnly refresh cookie flow. */
 export const apiClient = axios.create({
@@ -89,33 +89,35 @@ apiClient.interceptors.response.use(
   },
 );
 
+const ERROR_CODE_MESSAGES: Record<string, string> = {
+  invalid_credentials: "Грешен имейл или парола.",
+  email_not_verified: "Имейлът не е потвърден. Проверете пощата си.",
+  email_exists: "Имейлът вече е регистриран.",
+  invalid_verify_token: "Невалиден или изтекъл линк за потвърждение.",
+  token_reuse_detected: "Сесията е невалидна. Влезте отново.",
+  insufficient_permissions: "Нямате права за това действие.",
+};
+
 /**
- * Extract a human-readable message from an API error.
+ * Extract a localised Bulgarian error message from an API error.
  *
- * Handles FastAPI's `{detail: ...}` envelope (both the validation-error array
- * and the plain-string form), falling back to the axios/network message.
+ * Priority: X-Error-Code header → known detail string → generic fallback.
  */
 export function getApiErrorMessage(
   error: unknown,
-  fallback = "Възникна грешка.",
+  fallback = "Възникна грешка. Опитайте отново.",
 ): string {
   if (error instanceof AxiosError) {
-    const detail = (
-      error.response?.data as
-        | HTTPValidationError
-        | { detail?: string }
-        | undefined
-    )?.detail;
-    if (typeof detail === "string") {
-      return detail;
+    const code = error.response?.headers?.["x-error-code"] as
+      | string
+      | undefined;
+    if (code && Object.hasOwn(ERROR_CODE_MESSAGES, code)) {
+      return ERROR_CODE_MESSAGES[code];
     }
-    if (Array.isArray(detail) && detail.length > 0) {
-      return detail.map((item) => item.msg).join(", ");
-    }
-    return error.message || fallback;
+    return fallback;
   }
   if (error instanceof Error) {
-    return error.message;
+    return fallback;
   }
   return fallback;
 }

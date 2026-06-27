@@ -1,37 +1,58 @@
-import { Route, Routes } from "react-router-dom";
+import { lazy, Suspense } from "react";
+import { Navigate, Route, Routes } from "react-router-dom";
 import { ProtectedRoute } from "./auth/ProtectedRoute";
-import PrivacyPolicy from "./components/common/privacy";
-import TermsAndConditions from "./components/common/terms";
 import { ThemeProvider } from "./components/common/theme-provider";
-import { EventManager } from "./components/organizer part/event-manager";
-import Login from "./pages/Login";
-import SignupPage from "./pages/SignUp";
-import { StudentEventsPage } from "./pages/Student-Event_Page";
-import VerifyEmailPage from "./pages/VerifyEmail";
+
+const Login = lazy(() => import("./pages/Login"));
+const SignupPage = lazy(() => import("./pages/SignUp"));
+const VerifyEmailPage = lazy(() => import("./pages/VerifyEmail"));
+const PrivacyPolicy = lazy(() => import("./components/common/privacy"));
+const TermsAndConditions = lazy(() => import("./components/common/terms"));
+const EventsPage = lazy(() => import("./pages/EventsPage"));
+const EventDetailPage = lazy(() => import("./pages/EventDetailPage"));
+
+function PageFallback() {
+  return (
+    <div className="flex min-h-screen items-center justify-center text-gray-500">
+      Зареждане...
+    </div>
+  );
+}
 
 export function App() {
   return (
     <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
-      <Routes>
-        <Route element={<Login />} path="/hefest-frontend/" />
-        <Route element={<SignupPage />} path="/hefest-frontend/signup" />
-        <Route
-          element={<VerifyEmailPage />}
-          path="/hefest-frontend/verify-email"
-        />
-        <Route element={<TermsAndConditions />} path="/hefest-frontend/terms" />
-        <Route element={<PrivacyPolicy />} path="/hefest-frontend/privacy" />
-        <Route element={<ProtectedRoute />}>
+      <Suspense fallback={<PageFallback />}>
+        <Routes>
+          <Route element={<Login />} path="/hefest-frontend/" />
+          <Route element={<SignupPage />} path="/hefest-frontend/signup" />
           <Route
-            element={<EventManager />}
-            path="/hefest-frontend/events/manager"
+            element={<VerifyEmailPage />}
+            path="/hefest-frontend/verify-email"
           />
           <Route
-            element={<StudentEventsPage />}
-            path="/hefest-frontend/events/student"
+            element={<TermsAndConditions />}
+            path="/hefest-frontend/terms"
           />
-        </Route>
-      </Routes>
+          <Route element={<PrivacyPolicy />} path="/hefest-frontend/privacy" />
+          <Route element={<ProtectedRoute />}>
+            <Route element={<EventsPage />} path="/hefest-frontend/events" />
+            <Route
+              element={<EventDetailPage />}
+              path="/hefest-frontend/events/:eventId"
+            />
+            {/* Legacy routes — redirect to the unified page */}
+            <Route
+              path="/hefest-frontend/events/student"
+              element={<Navigate to="/hefest-frontend/events" replace />}
+            />
+            <Route
+              path="/hefest-frontend/events/manager"
+              element={<Navigate to="/hefest-frontend/events" replace />}
+            />
+          </Route>
+        </Routes>
+      </Suspense>
     </ThemeProvider>
   );
 }

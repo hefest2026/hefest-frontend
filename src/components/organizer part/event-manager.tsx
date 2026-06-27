@@ -1,8 +1,10 @@
 import { useMemo, useState } from "react";
 import { getApiErrorMessage } from "@/api/client";
 import type { EventResponse } from "@/api/types";
+import { useAuth } from "@/auth/auth-context";
 import { AccountTab } from "@/components/common/account-tab";
 import { EventsLayout } from "@/components/common/events-layout";
+import { Button } from "@/components/ui/button";
 import {
   useCancelEvent,
   useCreateEvent,
@@ -28,7 +30,68 @@ function formatDisplayDate(iso: string): string {
       });
 }
 
+interface PublishedEventCardProps {
+  event: EventResponse;
+  isOwner: boolean;
+  onCancel: (eventId: string) => void;
+  isCancelling: boolean;
+}
+
+function PublishedEventCard({
+  event,
+  isOwner,
+  onCancel,
+  isCancelling,
+}: PublishedEventCardProps) {
+  return (
+    <div className="border border-border bg-card p-6">
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex-1">
+          <h3 className="text-lg font-medium text-card-foreground">
+            {event.title}
+          </h3>
+          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+            {event.description}
+          </p>
+        </div>
+        {isOwner && (
+          <Button
+            variant="outline"
+            size="sm"
+            className="shrink-0 text-destructive"
+            onClick={() => onCancel(event.id)}
+            disabled={isCancelling}
+          >
+            Отмени
+          </Button>
+        )}
+      </div>
+      <div className="mt-6 grid grid-cols-1 gap-4 border-t border-border pt-4 text-sm text-muted-foreground sm:grid-cols-4">
+        <div>
+          <strong className="text-foreground">Начало:</strong>{" "}
+          {formatDisplayDate(event.starts_at)}
+        </div>
+        <div>
+          <strong className="text-foreground">Място:</strong> {event.location}
+        </div>
+        <div>
+          <strong className="text-foreground">Места:</strong>{" "}
+          {event.confirmed_count} / {event.capacity}
+        </div>
+        {isOwner && (
+          <div>
+            <span className="inline-block border border-primary/30 bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
+              Твое събитие
+            </span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export const EventManager = () => {
+  const { userId } = useAuth();
   const [activeTab, setActiveTab] = useState<OrganizerTab>("manage");
   const [publishingEvent, setPublishingEvent] = useState<EventResponse | null>(
     null,
@@ -107,31 +170,13 @@ export const EventManager = () => {
           ) : (
             <div className="grid gap-6">
               {published.map((event) => (
-                <div
+                <PublishedEventCard
                   key={event.id}
-                  className="border border-gray-200 bg-white p-6 shadow-sm"
-                >
-                  <h3 className="text-lg font-medium text-gray-900">
-                    {event.title}
-                  </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-gray-600">
-                    {event.description}
-                  </p>
-                  <div className="mt-6 grid grid-cols-1 gap-4 border-t border-gray-100 pt-4 text-sm text-gray-600 sm:grid-cols-3">
-                    <div>
-                      <strong className="text-gray-900">Начало:</strong>{" "}
-                      {formatDisplayDate(event.starts_at)}
-                    </div>
-                    <div>
-                      <strong className="text-gray-900">Място:</strong>{" "}
-                      {event.location}
-                    </div>
-                    <div>
-                      <strong className="text-gray-900">Капацитет:</strong>{" "}
-                      {event.capacity} места
-                    </div>
-                  </div>
-                </div>
+                  event={event}
+                  isOwner={event.organizer_id === userId}
+                  onCancel={(id) => cancelMutation.mutate(id)}
+                  isCancelling={cancelMutation.isPending}
+                />
               ))}
             </div>
           )}

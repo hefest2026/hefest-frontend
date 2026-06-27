@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useLogin } from "@/hooks/use-auth-mutations";
+import { useProviders } from "@/hooks/use-providers";
 import { cn } from "@/lib/utils";
 import { OAuthButtons } from "./oauth-buttons";
 
@@ -35,6 +36,10 @@ export function LoginForm({
   ...props
 }: React.ComponentProps<"div">) {
   const { mutate: login, isPending, error } = useLogin();
+  const { data: providers } = useProviders();
+  const hasOAuth =
+    (providers?.providers.filter((p) => p.available && p.login_url).length ??
+      0) > 0;
   const {
     register,
     handleSubmit,
@@ -53,20 +58,26 @@ export function LoginForm({
       <Card>
         <CardHeader className="text-center">
           <CardTitle className="text-xl">Влезте в акаунта си</CardTitle>
-          <CardDescription>
-            Влезте с Google или Microsoft акаунта
-          </CardDescription>
+          {hasOAuth && (
+            <CardDescription>
+              Влезте с Google или Microsoft акаунта
+            </CardDescription>
+          )}
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)}>
             <FieldGroup>
-              <OAuthButtons
-                labelPrefix="Влезте с"
-                className="flex flex-col gap-2"
-              />
-              <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
-                Или продължете с имейл адреса си
-              </FieldSeparator>
+              {hasOAuth && (
+                <>
+                  <OAuthButtons
+                    labelPrefix="Влезте с"
+                    className="flex flex-col gap-2"
+                  />
+                  <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
+                    Или продължете с имейл адреса си
+                  </FieldSeparator>
+                </>
+              )}
               <Field>
                 <FieldLabel htmlFor="email">Имейл</FieldLabel>
                 <Input

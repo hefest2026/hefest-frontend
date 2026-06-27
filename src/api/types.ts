@@ -9,6 +9,16 @@ export type EventStatus = "draft" | "published" | "cancelled";
 export type RegistrationStatus = "confirmed" | "waitlisted" | "cancelled";
 export type JobStatus = "pending" | "published";
 export type DeliveryStatus = "processing" | "completed" | "failed";
+export type UserRole = "student" | "organizer";
+
+// --- Users ---
+
+export interface UserMeResponse {
+  id: string;
+  email: string;
+  full_name: string;
+  role: UserRole;
+}
 
 // --- Auth ---
 
@@ -75,14 +85,15 @@ export interface EventResponse {
   ends_at: string | null;
   location: string;
   capacity: number;
+  confirmed_count: number;
   status: EventStatus;
   created_at: string;
   updated_at: string;
 }
 
 export interface EventDetailResponse extends EventResponse {
-  confirmed_count: number;
   waitlist_count: number;
+  organizer_name: string;
 }
 
 export interface ListEventsParams {

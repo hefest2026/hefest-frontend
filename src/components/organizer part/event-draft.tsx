@@ -202,18 +202,25 @@ export const EventOrganizerPanel: React.FC<EventOrganizerPanelProps> = ({
 
   return (
     <div className="mx-auto max-w-4xl">
-      <div className="mb-8">
-        <h2 className="mb-6 text-xl font-medium">
-          {editingId ? "Редактиране на събитие" : "Създаване на ново събитие"}
-        </h2>
+      <div className="mb-8 border border-border bg-card">
+        <div className="border-b border-border px-6 py-4">
+          <h2 className="text-base font-semibold text-card-foreground">
+            {editingId ? "Редактиране на събитие" : "Ново събитие"}
+          </h2>
+          <p className="mt-0.5 text-xs text-muted-foreground">
+            {editingId
+              ? "Промените ще бъдат запазени като чернова"
+              : "Попълнете детайлите — ще можете да прегледате преди публикуване"}
+          </p>
+        </div>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-5 p-6">
           <div>
             <label
               htmlFor="event-title"
-              className="mb-2 block text-sm font-medium"
+              className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-muted-foreground"
             >
-              Название на събитието *
+              Заглавие *
             </label>
             <Input
               id="event-title"
@@ -224,14 +231,14 @@ export const EventOrganizerPanel: React.FC<EventOrganizerPanelProps> = ({
               aria-invalid={!!errors.title}
             />
             {errors.title && (
-              <p className="mt-2 text-xs text-red-600">{errors.title}</p>
+              <p className="mt-1.5 text-xs text-destructive">{errors.title}</p>
             )}
           </div>
 
           <div>
             <label
               htmlFor="event-description"
-              className="mb-2 block text-sm font-medium"
+              className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-muted-foreground"
             >
               Описание *
             </label>
@@ -246,15 +253,17 @@ export const EventOrganizerPanel: React.FC<EventOrganizerPanelProps> = ({
               aria-invalid={!!errors.description}
             />
             {errors.description && (
-              <p className="mt-2 text-xs text-red-600">{errors.description}</p>
+              <p className="mt-1.5 text-xs text-destructive">
+                {errors.description}
+              </p>
             )}
           </div>
 
-          <div className="grid grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
             <div>
               <label
                 htmlFor="event-start-date"
-                className="mb-2 block text-sm font-medium"
+                className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-muted-foreground"
               >
                 Начало *
               </label>
@@ -283,17 +292,17 @@ export const EventOrganizerPanel: React.FC<EventOrganizerPanelProps> = ({
                     onChange={(e) =>
                       setForm({ ...form, starts_time: e.target.value })
                     }
-                    className="flex h-8 w-full border border-input bg-transparent px-2 text-sm"
+                    className="h-8 w-full border border-input bg-transparent px-2 text-xs transition-colors outline-none focus-visible:border-ring focus-visible:ring-1 focus-visible:ring-ring/50"
                   />
                 </div>
               </div>
               {errors.starts_date && (
-                <p className="mt-2 text-xs text-red-600">
+                <p className="mt-1.5 text-xs text-destructive">
                   {errors.starts_date}
                 </p>
               )}
               {errors.starts_time && (
-                <p className="mt-2 text-xs text-red-600">
+                <p className="mt-1 text-xs text-destructive">
                   {errors.starts_time}
                 </p>
               )}
@@ -302,7 +311,7 @@ export const EventOrganizerPanel: React.FC<EventOrganizerPanelProps> = ({
             <div>
               <label
                 htmlFor="event-end-date"
-                className="mb-2 block text-sm font-medium"
+                className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-muted-foreground"
               >
                 Край
               </label>
@@ -331,24 +340,28 @@ export const EventOrganizerPanel: React.FC<EventOrganizerPanelProps> = ({
                     onChange={(e) =>
                       setForm({ ...form, ends_time: e.target.value })
                     }
-                    className="flex h-8 w-full border border-input bg-transparent px-2 text-sm"
+                    className="h-8 w-full border border-input bg-transparent px-2 text-xs transition-colors outline-none focus-visible:border-ring focus-visible:ring-1 focus-visible:ring-ring/50"
                   />
                 </div>
               </div>
               {errors.ends_date && (
-                <p className="mt-2 text-xs text-red-600">{errors.ends_date}</p>
+                <p className="mt-1.5 text-xs text-destructive">
+                  {errors.ends_date}
+                </p>
               )}
               {errors.ends_time && (
-                <p className="mt-2 text-xs text-red-600">{errors.ends_time}</p>
+                <p className="mt-1 text-xs text-destructive">
+                  {errors.ends_time}
+                </p>
               )}
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
             <div>
               <label
                 htmlFor="event-capacity"
-                className="mb-2 block text-sm font-medium"
+                className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-muted-foreground"
               >
                 Капацитет *
               </label>
@@ -362,14 +375,16 @@ export const EventOrganizerPanel: React.FC<EventOrganizerPanelProps> = ({
                 aria-invalid={!!errors.capacity}
               />
               {errors.capacity && (
-                <p className="mt-2 text-xs text-red-600">{errors.capacity}</p>
+                <p className="mt-1.5 text-xs text-destructive">
+                  {errors.capacity}
+                </p>
               )}
             </div>
 
             <div>
               <label
                 htmlFor="event-location"
-                className="mb-2 block text-sm font-medium"
+                className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-muted-foreground"
               >
                 Местоположение или URL *
               </label>
@@ -382,12 +397,14 @@ export const EventOrganizerPanel: React.FC<EventOrganizerPanelProps> = ({
                 aria-invalid={!!errors.location}
               />
               {errors.location && (
-                <p className="mt-2 text-xs text-red-600">{errors.location}</p>
+                <p className="mt-1.5 text-xs text-destructive">
+                  {errors.location}
+                </p>
               )}
             </div>
           </div>
 
-          <div className="flex justify-end gap-3 pt-2">
+          <div className="flex items-center justify-end gap-3 border-t border-border pt-5">
             {editingId && (
               <Button
                 type="button"
@@ -397,10 +414,8 @@ export const EventOrganizerPanel: React.FC<EventOrganizerPanelProps> = ({
                 Отказ
               </Button>
             )}
-            <Button type="submit" disabled={isSubmitting}>
-              {editingId
-                ? "Актуализиране на събитие"
-                : "Създаване на ново събитие"}
+            <Button type="submit" size="lg" disabled={isSubmitting}>
+              {editingId ? "Запази промените" : "Създай събитие"}
             </Button>
           </div>
         </form>
@@ -408,72 +423,67 @@ export const EventOrganizerPanel: React.FC<EventOrganizerPanelProps> = ({
 
       {drafts.length > 0 && (
         <div>
-          <h2 className="mb-4 text-lg font-medium">
-            Чернови събития ({drafts.length})
+          <h2 className="mb-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+            Чернови ({drafts.length})
           </h2>
 
           <div className="space-y-4">
             {drafts.map((event) => (
-              <div
-                key={event.id}
-                className="border border-gray-200 bg-white p-5"
-              >
+              <div key={event.id} className="border border-border bg-card p-5">
                 <div className="mb-4 flex items-start justify-between">
                   <div className="flex-1">
-                    <h3 className="mb-1 text-base font-medium">
+                    <h3 className="mb-1 text-base font-medium text-card-foreground">
                       {event.title}
                     </h3>
-                    <p className="text-sm break-words text-gray-600">
+                    <p className="text-sm break-words text-muted-foreground">
                       {event.description}
                     </p>
                   </div>
-                  <span className="ml-4 bg-gray-100 px-3 py-1.5 text-xs font-medium whitespace-nowrap text-gray-700">
+                  <span className="ml-4 bg-secondary px-2.5 py-1 text-xs font-medium whitespace-nowrap text-secondary-foreground">
                     ЧЕРНОВА
                   </span>
                 </div>
 
-                <div className="mb-5 grid grid-cols-2 gap-5 border-b border-gray-200 pb-5 md:grid-cols-4">
+                <div className="mb-5 grid grid-cols-2 gap-5 border-b border-border pb-5 md:grid-cols-4">
                   <div>
-                    <p className="mb-1 text-xs text-gray-600">Начало</p>
+                    <p className="mb-1 text-xs text-muted-foreground">Начало</p>
                     <p className="text-sm font-medium">
                       {formatDateTimeDisplay(event.starts_at)}
                     </p>
                   </div>
                   {event.ends_at && (
                     <div>
-                      <p className="mb-1 text-xs text-gray-600">Край</p>
+                      <p className="mb-1 text-xs text-muted-foreground">Край</p>
                       <p className="text-sm font-medium">
                         {formatDateTimeDisplay(event.ends_at)}
                       </p>
                     </div>
                   )}
                   <div>
-                    <p className="mb-1 text-xs text-gray-600">Капацитет</p>
+                    <p className="mb-1 text-xs text-muted-foreground">
+                      Капацитет
+                    </p>
                     <p className="text-sm font-medium">
                       {event.capacity}{" "}
                       {event.capacity === 1 ? "човек" : "човека"}
                     </p>
                   </div>
                   <div>
-                    <p className="mb-1 text-xs text-gray-600">Местоположение</p>
+                    <p className="mb-1 text-xs text-muted-foreground">
+                      Местоположение
+                    </p>
                     <p className="text-sm font-medium break-words">
                       {event.location}
                     </p>
                   </div>
                 </div>
 
-                <div className="flex justify-end gap-2">
-                  <Button
-                    onClick={() => onPublish(event)}
-                    size="sm"
-                    disabled={isSubmitting}
-                  >
-                    Публикуване
-                  </Button>
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-end">
                   <Button
                     onClick={() => handleEdit(event)}
                     variant="outline"
                     size="sm"
+                    className="w-full sm:w-auto"
                   >
                     Редактиране
                   </Button>
@@ -481,10 +491,17 @@ export const EventOrganizerPanel: React.FC<EventOrganizerPanelProps> = ({
                     onClick={() => onDelete(event.id)}
                     variant="outline"
                     size="sm"
-                    className="text-red-600"
+                    className="w-full text-destructive sm:w-auto"
                     disabled={isSubmitting}
                   >
-                    Отказ
+                    Изтрий
+                  </Button>
+                  <Button
+                    onClick={() => onPublish(event)}
+                    disabled={isSubmitting}
+                    className="w-full sm:w-auto"
+                  >
+                    Публикуване
                   </Button>
                 </div>
               </div>
@@ -494,10 +511,9 @@ export const EventOrganizerPanel: React.FC<EventOrganizerPanelProps> = ({
       )}
 
       {drafts.length === 0 && !editingId && (
-        <div className="py-8 text-center text-gray-600">
-          <p>
-            Няма чернови на събитие все още. Създайте едно, за да започнете.
-          </p>
+        <div className="border border-dashed border-border py-10 text-center text-sm text-muted-foreground">
+          Няма чернови все още — попълнете формата по-горе, за да създадете
+          събитие.
         </div>
       )}
     </div>

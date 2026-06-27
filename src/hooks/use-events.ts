@@ -14,12 +14,13 @@ import type {
 } from "@/api/types";
 import { queryKeys } from "@/lib/query-keys";
 
-/** List events visible to the caller. */
+/** List events visible to the caller. Polls every 30 s for live seat counts. */
 export function useEvents(params: ListEventsParams = {}) {
   return useQuery({
     queryKey: queryKeys.events.list(params),
     queryFn: () => listEvents(params),
     staleTime: 1000 * 30,
+    refetchInterval: 1000 * 30,
   });
 }
 

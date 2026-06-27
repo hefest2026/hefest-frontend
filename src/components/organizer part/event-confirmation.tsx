@@ -48,225 +48,75 @@ export const PublishConfirmation: React.FC<PublishConfirmationProps> = ({
   onCancel,
   isLoading = false,
 }) => {
-  const handlePublish = () => {
-    onPublish(event.id);
-  };
-
   return (
-    <div
-      style={{
-        position: "fixed",
-        inset: 0,
-        background: "rgba(0, 0, 0, 0.45)",
-        zIndex: 9999,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "1rem",
-      }}
-    >
-      <div
-        style={{
-          background: "white",
-          borderRadius: "var(--border-radius-lg)",
-          border: "0.5px solid var(--color-border-tertiary)",
-          padding: "2rem",
-          maxWidth: "520px",
-          width: "100%",
-          boxSizing: "border-box",
-        }}
-      >
-        <div style={{ marginBottom: "2rem" }}>
-          <h2
-            style={{
-              fontSize: "20px",
-              fontWeight: 500,
-              margin: "0 0 0.5rem",
-              color: "var(--color-text-primary)",
-            }}
-          >
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/45 p-4">
+      <div className="w-full max-w-[520px] border border-border bg-card p-8">
+        <div className="mb-6">
+          <h2 className="mb-1.5 text-xl font-medium text-card-foreground">
             Публикуване на събитието
           </h2>
-          <p
-            style={{
-              fontSize: "14px",
-              color: "var(--color-text-secondary)",
-              margin: 0,
-            }}
-          >
+          <p className="text-sm text-muted-foreground">
             Преглед на детайлите преди публикуване
           </p>
         </div>
 
-        <div
-          style={{
-            background: "var(--color-background-secondary)",
-            borderRadius: "var(--border-radius-md)",
-            padding: "1.25rem",
-            marginBottom: "1.75rem",
-          }}
-        >
-          <div style={{ marginBottom: "1.25rem" }}>
-            <h3
-              style={{
-                fontSize: "16px",
-                fontWeight: 500,
-                margin: "0 0 0.5rem",
-                color: "var(--color-text-primary)",
-                wordBreak: "break-word",
-              }}
-            >
+        <div className="mb-6 bg-muted p-5">
+          <div className="mb-4">
+            <h3 className="mb-1.5 break-words text-base font-medium text-foreground">
               {event.title}
             </h3>
-            <p
-              style={{
-                fontSize: "14px",
-                color: "var(--color-text-secondary)",
-                margin: 0,
-                lineHeight: 1.5,
-                wordBreak: "break-word",
-              }}
-            >
+            <p className="break-words text-sm leading-relaxed text-muted-foreground">
               {event.description}
             </p>
           </div>
 
-          <div
-            style={{
-              borderTop: "0.5px solid var(--color-border-tertiary)",
-              paddingTop: "1rem",
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr",
-              gap: "1rem",
-            }}
-          >
+          <div className="grid grid-cols-2 gap-4 border-t border-border pt-4">
             <div>
-              <p
-                style={{
-                  fontSize: "12px",
-                  color: "var(--color-text-tertiary)",
-                  margin: "0 0 0.5rem",
-                  textTransform: "uppercase",
-                  fontWeight: 500,
-                  letterSpacing: "0.4px",
-                }}
-              >
+              <p className="mb-1 text-xs font-medium uppercase tracking-wider text-muted-foreground">
                 Начало
               </p>
-              <p
-                style={{
-                  fontSize: "14px",
-                  fontWeight: 500,
-                  margin: 0,
-                  color: "var(--color-text-primary)",
-                }}
-              >
+              <p className="text-sm font-medium text-foreground">
                 {formatDateTimeDisplay(event.starts_at)}
               </p>
             </div>
 
             {event.ends_at && (
               <div>
-                <p
-                  style={{
-                    fontSize: "12px",
-                    color: "var(--color-text-tertiary)",
-                    margin: "0 0 0.5rem",
-                    textTransform: "uppercase",
-                    fontWeight: 500,
-                    letterSpacing: "0.4px",
-                  }}
-                >
+                <p className="mb-1 text-xs font-medium uppercase tracking-wider text-muted-foreground">
                   Край
                 </p>
-                <p
-                  style={{
-                    fontSize: "14px",
-                    fontWeight: 500,
-                    margin: 0,
-                    color: "var(--color-text-primary)",
-                  }}
-                >
+                <p className="text-sm font-medium text-foreground">
                   {formatDateTimeDisplay(event.ends_at)}
                 </p>
               </div>
             )}
 
             <div>
-              <p
-                style={{
-                  fontSize: "12px",
-                  color: "var(--color-text-tertiary)",
-                  margin: "0 0 0.5rem",
-                  textTransform: "uppercase",
-                  fontWeight: 500,
-                  letterSpacing: "0.4px",
-                }}
-              >
+              <p className="mb-1 text-xs font-medium uppercase tracking-wider text-muted-foreground">
                 Капацитет
               </p>
-              <p
-                style={{
-                  fontSize: "14px",
-                  fontWeight: 500,
-                  margin: 0,
-                  color: "var(--color-text-primary)",
-                }}
-              >
+              <p className="text-sm font-medium text-foreground">
                 {event.capacity} {event.capacity === 1 ? "човек" : "човека"}
               </p>
             </div>
 
             {event.ends_at && (
               <div>
-                <p
-                  style={{
-                    fontSize: "12px",
-                    color: "var(--color-text-tertiary)",
-                    margin: "0 0 0.5rem",
-                    textTransform: "uppercase",
-                    fontWeight: 500,
-                    letterSpacing: "0.4px",
-                  }}
-                >
+                <p className="mb-1 text-xs font-medium uppercase tracking-wider text-muted-foreground">
                   Продължителност
                 </p>
-                <p
-                  style={{
-                    fontSize: "14px",
-                    fontWeight: 500,
-                    margin: 0,
-                    color: "var(--color-text-primary)",
-                  }}
-                >
+                <p className="text-sm font-medium text-foreground">
                   {calculateDuration(event.starts_at, event.ends_at)}
                 </p>
               </div>
             )}
 
             {event.location && (
-              <div style={{ gridColumn: "1 / -1" }}>
-                <p
-                  style={{
-                    fontSize: "12px",
-                    color: "var(--color-text-tertiary)",
-                    margin: "0 0 0.5rem",
-                    textTransform: "uppercase",
-                    fontWeight: 500,
-                    letterSpacing: "0.4px",
-                  }}
-                >
+              <div className="col-span-2">
+                <p className="mb-1 text-xs font-medium uppercase tracking-wider text-muted-foreground">
                   Местоположение
                 </p>
-                <p
-                  style={{
-                    fontSize: "14px",
-                    fontWeight: 500,
-                    margin: 0,
-                    color: "var(--color-text-primary)",
-                    wordBreak: "break-word",
-                  }}
-                >
+                <p className="break-words text-sm font-medium text-foreground">
                   {event.location}
                 </p>
               </div>
@@ -274,50 +124,26 @@ export const PublishConfirmation: React.FC<PublishConfirmationProps> = ({
           </div>
         </div>
 
-        <div
-          style={{
-            padding: "0.75rem 1rem",
-            marginBottom: "1.75rem",
-          }}
-        >
-          <p className="bg-secondary px-3 py-1.5 text-xs font-medium text-gray-700">
-            {/* <i
-              className="ti ti-info-circle"
-              style={{
-                fontSize: "16px",
-                verticalAlign: "-2px",
-                marginRight: "8px",
-              }}
-              aria-hidden="true"
-            /> */}
+        <div className="mb-6">
+          <p className="bg-secondary px-3 py-2 text-xs text-secondary-foreground">
             След публикуване събитието ще бъде видимо за всички. Можете да го
             редактирате или скриете по-късно.
           </p>
         </div>
 
-        <div
-          style={{
-            display: "flex",
-            gap: "12px",
-            justifyContent: "flex-end",
-          }}
-        >
+        <div className="flex justify-end gap-3">
           <Button
             onClick={onCancel}
             variant="outline"
             disabled={isLoading}
-            style={{
-              minWidth: "120px",
-            }}
+            className="min-w-[100px]"
           >
             Отказ
           </Button>
           <Button
-            onClick={handlePublish}
+            onClick={() => onPublish(event.id)}
             disabled={isLoading}
-            style={{
-              minWidth: "120px",
-            }}
+            className="min-w-[100px]"
           >
             {isLoading ? "Публикуване..." : "Публикуване"}
           </Button>

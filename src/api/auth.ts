@@ -4,6 +4,7 @@ import type {
   ProvidersResponse,
   RegisterRequest,
   TokenResponse,
+  UserMeResponse,
   VerifyEmailRequest,
 } from "./types";
 
@@ -54,5 +55,11 @@ export async function logoutAll(): Promise<void> {
 /** List supported auth providers and their availability. */
 export async function listProviders(): Promise<ProvidersResponse> {
   const response = await apiClient.get<ProvidersResponse>("/auth/providers");
+  return response.data;
+}
+
+/** Return the current authenticated user's profile. */
+export async function getMe(): Promise<UserMeResponse> {
+  const response = await apiClient.get<UserMeResponse>("/users/me");
   return response.data;
 }

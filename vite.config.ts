@@ -10,6 +10,7 @@ const API_PREFIXES = [
   "/register",
   "/login",
   "/auth",
+  "/users",
   "/events",
   "/registrations",
   "/notification-jobs",
@@ -17,7 +18,10 @@ const API_PREFIXES = [
   "/ready",
 ];
 
-const API_TARGET = process.env.VITE_API_URL || "http://localhost:8000";
+const API_TARGET =
+  process.env.API_PROXY_TARGET ||
+  process.env.VITE_API_URL ||
+  "http://localhost:8000";
 
 // https://vite.dev/config/
 export default defineConfig({

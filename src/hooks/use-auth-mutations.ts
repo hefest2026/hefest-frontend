@@ -9,7 +9,7 @@ import {
 import type { LoginRequest, RegisterRequest, TokenResponse } from "@/api/types";
 import { useAuth } from "@/auth/auth-context";
 
-const EVENTS_ROUTE = "/hefest-frontend/events/student";
+const EVENTS_ROUTE = "/hefest-frontend/events";
 const VERIFY_ROUTE = "/hefest-frontend/verify-email";
 const LOGIN_ROUTE = "/hefest-frontend/";
 
