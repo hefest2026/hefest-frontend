@@ -20,6 +20,28 @@ export interface UserMeResponse {
   role: UserRole;
 }
 
+export interface UserUpdateRequest {
+  full_name: string;
+}
+
+export interface ChangePasswordRequest {
+  current_password: string;
+  new_password: string;
+}
+
+// --- Stats ---
+
+export interface OrganizerStats {
+  events_total: number;
+  events_draft: number;
+  events_published: number;
+  events_upcoming: number;
+  total_capacity: number;
+  total_confirmed: number;
+  total_waitlisted: number;
+  new_registrations_7d: number;
+}
+
 // --- Auth ---
 
 export interface RegisterRequest {

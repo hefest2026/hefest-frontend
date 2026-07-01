@@ -36,4 +36,5 @@ export const queryKeys = {
   },
   providers: () => ["auth", "providers"] as const,
   me: () => ["auth", "me"] as const,
+  stats: () => ["stats"] as const,
 } as const;

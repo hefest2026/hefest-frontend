@@ -1,10 +1,12 @@
 import { apiClient } from "./client";
 import type {
+  ChangePasswordRequest,
   LoginRequest,
   ProvidersResponse,
   RegisterRequest,
   TokenResponse,
   UserMeResponse,
+  UserUpdateRequest,
   VerifyEmailRequest,
 } from "./types";
 
@@ -62,4 +64,19 @@ export async function listProviders(): Promise<ProvidersResponse> {
 export async function getMe(): Promise<UserMeResponse> {
   const response = await apiClient.get<UserMeResponse>("/users/me");
   return response.data;
+}
+
+/** Update the current user's editable profile fields (display name). */
+export async function updateMe(
+  data: UserUpdateRequest,
+): Promise<UserMeResponse> {
+  const response = await apiClient.patch<UserMeResponse>("/users/me", data);
+  return response.data;
+}
+
+/** Change the current user's password; revokes all other sessions server-side. */
+export async function changePassword(
+  data: ChangePasswordRequest,
+): Promise<void> {
+  await apiClient.post("/auth/change-password", data);
 }
