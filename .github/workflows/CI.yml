@@ -45,3 +45,21 @@ jobs:
 
       - name: Type check
         run: bun run type-check
+
+  build:
+    name: Production build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - run: bun install --frozen-lockfile
+
+      # Catches build breakage (and the implicit type-check in `tsc -b`) before
+      # the deploy workflow rebuilds the image on the host.
+      - name: Build
+        run: bun run build
