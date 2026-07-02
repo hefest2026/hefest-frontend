@@ -12,10 +12,11 @@ import {
   usePublishEvent,
   useUpdateEvent,
 } from "@/hooks/use-events";
+import { Dashboard } from "./dashboard";
 import { PublishConfirmation } from "./event-confirmation";
 import { EventOrganizerPanel } from "./event-draft";
 
-type OrganizerTab = "manage" | "all-events" | "account";
+type OrganizerTab = "dashboard" | "manage" | "all-events" | "account";
 
 function formatDisplayDate(iso: string): string {
   const date = new Date(iso);
@@ -92,7 +93,7 @@ function PublishedEventCard({
 
 export const EventManager = () => {
   const { userId } = useAuth();
-  const [activeTab, setActiveTab] = useState<OrganizerTab>("manage");
+  const [activeTab, setActiveTab] = useState<OrganizerTab>("dashboard");
   const [publishingEvent, setPublishingEvent] = useState<EventResponse | null>(
     null,
   );
@@ -103,13 +104,14 @@ export const EventManager = () => {
   const publishMutation = usePublishEvent();
   const cancelMutation = useCancelEvent();
 
-  const { drafts, published } = useMemo(() => {
+  const { drafts, published, own } = useMemo(() => {
     const all = eventsQuery.data ?? [];
     return {
       drafts: all.filter((event) => event.status === "draft"),
       published: all.filter((event) => event.status === "published"),
+      own: all.filter((event) => event.organizer_id === userId),
     };
-  }, [eventsQuery.data]);
+  }, [eventsQuery.data, userId]);
 
   const isSubmitting =
     createMutation.isPending ||
@@ -135,6 +137,7 @@ export const EventManager = () => {
       activeTab={activeTab}
       onTabChange={(id) => setActiveTab(id as OrganizerTab)}
       tabs={[
+        { id: "dashboard", label: "Начало" },
         { id: "manage", label: "Организаторски панел" },
         { id: "all-events", label: `Всички събития (${published.length})` },
       ]}
@@ -144,6 +147,8 @@ export const EventManager = () => {
           {getApiErrorMessage(mutationError)}
         </p>
       )}
+
+      {activeTab === "dashboard" && <Dashboard events={own} />}
 
       {activeTab === "manage" && (
         <EventOrganizerPanel

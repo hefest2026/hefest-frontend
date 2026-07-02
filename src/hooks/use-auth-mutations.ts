@@ -1,13 +1,23 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import {
+  changePassword as changePasswordRequest,
   login as loginRequest,
   logout as logoutRequest,
   register as registerRequest,
+  updateMe as updateMeRequest,
   verifyEmail as verifyEmailRequest,
 } from "@/api/auth";
-import type { LoginRequest, RegisterRequest, TokenResponse } from "@/api/types";
+import type {
+  ChangePasswordRequest,
+  LoginRequest,
+  RegisterRequest,
+  TokenResponse,
+  UserMeResponse,
+  UserUpdateRequest,
+} from "@/api/types";
 import { useAuth } from "@/auth/auth-context";
+import { queryKeys } from "@/lib/query-keys";
 
 const EVENTS_ROUTE = "/hefest-frontend/events";
 const VERIFY_ROUTE = "/hefest-frontend/verify-email";
@@ -47,6 +57,24 @@ export function useVerifyEmail() {
       setToken(response.access_token);
       navigate(EVENTS_ROUTE);
     },
+  });
+}
+
+/** Update the current user's display name; refresh the cached profile. */
+export function useUpdateProfile() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: UserUpdateRequest) => updateMeRequest(data),
+    onSuccess: (user: UserMeResponse) => {
+      queryClient.setQueryData(queryKeys.me(), user);
+    },
+  });
+}
+
+/** Change the current user's password. Other sessions are revoked server-side. */
+export function useChangePassword() {
+  return useMutation({
+    mutationFn: (data: ChangePasswordRequest) => changePasswordRequest(data),
   });
 }
 
