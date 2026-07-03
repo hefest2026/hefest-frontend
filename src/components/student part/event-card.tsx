@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import type { EventResponse, MyRegistrationResponse } from "@/api/types";
 import { Button } from "@/components/ui/button";
+import { stripLocationCoords } from "@/lib/location-coords";
 
 function formatDateTime(iso: string | null): string {
   if (!iso) return "Не е зададено";
@@ -95,7 +96,9 @@ export function EventCard({
           <p className="mb-0.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
             Местоположение
           </p>
-          <p className="text-sm font-medium break-words">{event.location}</p>
+          <p className="text-sm font-medium break-words">
+            {stripLocationCoords(event.location)}
+          </p>
         </div>
       </div>
 

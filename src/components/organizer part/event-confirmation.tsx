@@ -1,6 +1,7 @@
 import type React from "react";
 import type { EventResponse } from "@/api/types";
 import { Button } from "@/components/ui/button";
+import { stripLocationCoords } from "@/lib/location-coords";
 
 interface PublishConfirmationProps {
   event: EventResponse;
@@ -117,7 +118,7 @@ export const PublishConfirmation: React.FC<PublishConfirmationProps> = ({
                   Местоположение
                 </p>
                 <p className="break-words text-sm font-medium text-foreground">
-                  {event.location}
+                  {stripLocationCoords(event.location)}
                 </p>
               </div>
             )}

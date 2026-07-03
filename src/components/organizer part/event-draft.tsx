@@ -5,9 +5,16 @@ import type {
   EventResponse,
   EventUpdateRequest,
 } from "@/api/types";
+import { LocationMapPicker } from "@/components/common/location-map-picker";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  type LatLng,
+  parseLocationCoords,
+  stripLocationCoords,
+  withLocationCoords,
+} from "@/lib/location-coords";
 
 interface FormState {
   title: string;
@@ -89,6 +96,8 @@ export const EventOrganizerPanel: React.FC<EventOrganizerPanelProps> = ({
   const [form, setForm] = useState<FormState>(initialFormState);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [showMap, setShowMap] = useState(false);
+  const [mapCoords, setMapCoords] = useState<LatLng | null>(null);
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -159,7 +168,10 @@ export const EventOrganizerPanel: React.FC<EventOrganizerPanelProps> = ({
       description: form.description.trim(),
       starts_at: startsAt,
       ends_at: endsAt,
-      location: form.location.trim(),
+      location: withLocationCoords(
+        form.location.trim(),
+        showMap ? mapCoords : null,
+      ),
       capacity: parseInt(form.capacity, 10),
     };
 
@@ -172,6 +184,8 @@ export const EventOrganizerPanel: React.FC<EventOrganizerPanelProps> = ({
 
     setForm(initialFormState);
     setErrors({});
+    setShowMap(false);
+    setMapCoords(null);
   };
 
   const handleEdit = (event: EventResponse) => {
@@ -180,6 +194,7 @@ export const EventOrganizerPanel: React.FC<EventOrganizerPanelProps> = ({
     const [endsDate, endsTime] = event.ends_at
       ? event.ends_at.split("T")
       : ["", ""];
+    const coords = parseLocationCoords(event.location);
 
     setForm({
       title: event.title,
@@ -189,8 +204,10 @@ export const EventOrganizerPanel: React.FC<EventOrganizerPanelProps> = ({
       ends_date: endsDate ? yyyymmddToDdmmyyyy(endsDate) : "",
       ends_time: endsTime ? endsTime.slice(0, 5) : "",
       capacity: event.capacity.toString(),
-      location: event.location,
+      location: stripLocationCoords(event.location).trim(),
     });
+    setShowMap(coords !== null);
+    setMapCoords(coords);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -198,6 +215,8 @@ export const EventOrganizerPanel: React.FC<EventOrganizerPanelProps> = ({
     setEditingId(null);
     setForm(initialFormState);
     setErrors({});
+    setShowMap(false);
+    setMapCoords(null);
   };
 
   return (
@@ -404,6 +423,31 @@ export const EventOrganizerPanel: React.FC<EventOrganizerPanelProps> = ({
             </div>
           </div>
 
+          <div>
+            <label className="flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+              <input
+                type="checkbox"
+                checked={showMap}
+                onChange={(e) => {
+                  setShowMap(e.target.checked);
+                  if (e.target.checked && !mapCoords) {
+                    setMapCoords(null);
+                  }
+                }}
+                className="h-3.5 w-3.5"
+              />
+              Покажи местоположението на карта
+            </label>
+            {showMap && (
+              <div className="mt-2">
+                <LocationMapPicker value={mapCoords} onChange={setMapCoords} />
+                <p className="mt-1.5 text-xs text-muted-foreground">
+                  Кликни върху картата, за да поставиш или преместиш пина.
+                </p>
+              </div>
+            )}
+          </div>
+
           <div className="flex items-center justify-end gap-3 border-t border-border pt-5">
             {editingId && (
               <Button
@@ -473,7 +517,7 @@ export const EventOrganizerPanel: React.FC<EventOrganizerPanelProps> = ({
                       Местоположение
                     </p>
                     <p className="text-sm font-medium break-words">
-                      {event.location}
+                      {stripLocationCoords(event.location)}
                     </p>
                   </div>
                 </div>
