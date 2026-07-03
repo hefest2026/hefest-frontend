@@ -10,6 +10,7 @@ const PrivacyPolicy = lazy(() => import("./components/common/privacy"));
 const TermsAndConditions = lazy(() => import("./components/common/terms"));
 const EventsPage = lazy(() => import("./pages/EventsPage"));
 const EventDetailPage = lazy(() => import("./pages/EventDetailPage"));
+const AuthCallbackPage = lazy(() => import("./pages/AuthCallback"));
 
 function PageFallback() {
   return (
@@ -35,6 +36,12 @@ export function App() {
             path="/hefest-frontend/terms"
           />
           <Route element={<PrivacyPolicy />} path="/hefest-frontend/privacy" />
+          {/* OAuth landing — public: the token arrives in the URL fragment and
+              is only stored here, so ProtectedRoute would bounce it. */}
+          <Route
+            element={<AuthCallbackPage />}
+            path="/hefest-frontend/auth/callback"
+          />
           <Route element={<ProtectedRoute />}>
             <Route element={<EventsPage />} path="/hefest-frontend/events" />
             <Route

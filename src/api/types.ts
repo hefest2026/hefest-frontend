@@ -146,6 +146,8 @@ export interface MyRegistrationResponse {
 export interface RegistrationSummary {
   id: string;
   student_id: string;
+  student_name: string;
+  student_email: string;
   status: RegistrationStatus;
   registered_at: string;
 }
