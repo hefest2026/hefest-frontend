@@ -12,6 +12,10 @@ dist
 dist-ssr
 *.local
 
+# TypeScript declaration output leaked into src/ (tsc -b with declaration:true)
+src/**/*.d.ts
+src/**/*.d.ts.map
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

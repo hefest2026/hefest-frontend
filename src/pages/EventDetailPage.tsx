@@ -1,8 +1,9 @@
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { getApiErrorMessage } from "@/api/client";
 import type { MyRegistrationResponse } from "@/api/types";
 import { useAuth } from "@/auth/auth-context";
 import { LocationMapView } from "@/components/common/location-map-view";
+import { EventAttendees } from "@/components/organizer part/event-attendees";
 import { Button } from "@/components/ui/button";
 import { useLogout } from "@/hooks/use-auth-mutations";
 import { useEvent } from "@/hooks/use-events";
@@ -134,7 +135,8 @@ function RegistrationAction({
 
 export default function EventDetailPage() {
   const { eventId } = useParams<{ eventId: string }>();
-  const { role } = useAuth();
+  const { role, userId } = useAuth();
+  const navigate = useNavigate();
   const logout = useLogout();
 
   const eventQuery = useEvent(eventId);
@@ -324,6 +326,25 @@ export default function EventDetailPage() {
                   eventId={event.id as unknown as string}
                   isFull={isFull}
                 />
+              </div>
+            )}
+
+            {/* Organizer participants (own events only) */}
+            {role === "organizer" && event.organizer_id === userId && (
+              <div className="space-y-4 border-t border-border px-6 py-6">
+                <div className="flex items-center justify-between gap-3">
+                  <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                    Участници
+                  </p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => navigate("/hefest-frontend/events")}
+                  >
+                    Редактиране
+                  </Button>
+                </div>
+                <EventAttendees eventId={event.id as unknown as string} />
               </div>
             )}
           </div>
