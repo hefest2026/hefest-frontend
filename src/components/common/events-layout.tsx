@@ -160,7 +160,7 @@ export function EventsLayout({
 
       <footer className="mt-10 w-full border-t border-border bg-card">
         <div className="mx-auto max-w-6xl px-4 py-6 text-center text-xs text-muted-foreground">
-          EventHub — Платформа за училищни събития и уъркшопи.
+          HefestQueue — Платформа за училищни събития и уъркшопи.
         </div>
       </footer>
     </div>

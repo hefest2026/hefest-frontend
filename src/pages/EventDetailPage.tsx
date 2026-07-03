@@ -159,22 +159,13 @@ export default function EventDetailPage() {
               to="/hefest-frontend/events"
               className="flex items-center gap-2.5"
             >
-              <svg
-                className="h-5 w-5 text-primary"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <title>EventHub Logo</title>
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                />
-              </svg>
+              <img
+                src={`${import.meta.env.BASE_URL}logo.png`}
+                alt="HefestQueue Logo"
+                className="h-5 w-5"
+              />
               <span className="font-heading text-sm font-bold tracking-widest uppercase text-foreground">
-                EventHub
+                HefestQueue
               </span>
             </Link>
           </div>
@@ -325,7 +316,7 @@ export default function EventDetailPage() {
 
       <footer className="mt-10 w-full border-t border-border bg-card">
         <div className="mx-auto max-w-6xl px-4 py-6 text-center text-xs text-muted-foreground">
-          EventHub — Платформа за училищни събития и уъркшопи.
+          HefestQueue — Платформа за училищни събития и уъркшопи.
         </div>
       </footer>
     </div>
