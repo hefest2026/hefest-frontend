@@ -1,7 +1,9 @@
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { getApiErrorMessage } from "@/api/client";
 import type { MyRegistrationResponse } from "@/api/types";
 import { useAuth } from "@/auth/auth-context";
+import { LocationMapView } from "@/components/common/location-map-view";
+import { EventAttendees } from "@/components/organizer part/event-attendees";
 import { Button } from "@/components/ui/button";
 import { useLogout } from "@/hooks/use-auth-mutations";
 import { useEvent } from "@/hooks/use-events";
@@ -10,6 +12,10 @@ import {
   useMyRegistrations,
   useRegisterForEvent,
 } from "@/hooks/use-registrations";
+import {
+  parseLocationCoords,
+  stripLocationCoords,
+} from "@/lib/location-coords";
 
 function formatDateTime(iso: string | null): string {
   if (!iso) return "Не е зададено";
@@ -129,7 +135,8 @@ function RegistrationAction({
 
 export default function EventDetailPage() {
   const { eventId } = useParams<{ eventId: string }>();
-  const { role } = useAuth();
+  const { role, userId } = useAuth();
+  const navigate = useNavigate();
   const logout = useLogout();
 
   const eventQuery = useEvent(eventId);
@@ -143,6 +150,8 @@ export default function EventDetailPage() {
   const isConfirmed = registration?.status === "confirmed";
   const isWaitlisted = registration?.status === "waitlisted";
   const isFull = event ? event.confirmed_count >= event.capacity : false;
+  const locationCoords = event ? parseLocationCoords(event.location) : null;
+  const locationText = event ? stripLocationCoords(event.location) : "";
 
   return (
     <div className="flex min-h-screen flex-col bg-muted text-foreground">
@@ -257,21 +266,30 @@ export default function EventDetailPage() {
                   Местоположение
                 </p>
                 <p className="text-sm font-medium break-words">
-                  {URL_RE.test(event.location) ? (
+                  {URL_RE.test(locationText) ? (
                     <a
-                      href={event.location}
+                      href={locationText}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-primary underline underline-offset-2 hover:opacity-80"
                     >
-                      {event.location}
+                      {locationText}
                     </a>
                   ) : (
-                    event.location
+                    locationText
                   )}
                 </p>
               </div>
             </div>
+
+            {locationCoords && (
+              <div className="border-t border-border px-6 py-6">
+                <p className="mb-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                  Карта
+                </p>
+                <LocationMapView coords={locationCoords} />
+              </div>
+            )}
 
             {/* Registration status */}
             {isConfirmed && (
@@ -308,6 +326,25 @@ export default function EventDetailPage() {
                   eventId={event.id as unknown as string}
                   isFull={isFull}
                 />
+              </div>
+            )}
+
+            {/* Organizer participants (own events only) */}
+            {role === "organizer" && event.organizer_id === userId && (
+              <div className="space-y-4 border-t border-border px-6 py-6">
+                <div className="flex items-center justify-between gap-3">
+                  <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                    Участници
+                  </p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => navigate("/hefest-frontend/events")}
+                  >
+                    Редактиране
+                  </Button>
+                </div>
+                <EventAttendees eventId={event.id as unknown as string} />
               </div>
             )}
           </div>

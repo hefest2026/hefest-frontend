@@ -12,6 +12,7 @@ import {
   usePublishEvent,
   useUpdateEvent,
 } from "@/hooks/use-events";
+import { stripLocationCoords } from "@/lib/location-coords";
 import { Dashboard } from "./dashboard";
 import { PublishConfirmation } from "./event-confirmation";
 import { EventOrganizerPanel } from "./event-draft";
@@ -73,7 +74,8 @@ function PublishedEventCard({
           {formatDisplayDate(event.starts_at)}
         </div>
         <div>
-          <strong className="text-foreground">Място:</strong> {event.location}
+          <strong className="text-foreground">Място:</strong>{" "}
+          {stripLocationCoords(event.location)}
         </div>
         <div>
           <strong className="text-foreground">Места:</strong>{" "}

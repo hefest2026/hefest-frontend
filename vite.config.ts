@@ -14,6 +14,7 @@ const API_PREFIXES = [
   "/events",
   "/registrations",
   "/notification-jobs",
+  "/stats",
   "/health",
   "/ready",
 ];
