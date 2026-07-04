@@ -178,6 +178,30 @@ export interface ListNotificationJobsParams extends PaginationParams {
   event_id?: string;
 }
 
+// --- Notifications (in-app feed) ---
+
+export type NotificationType =
+  | "RegistrationConfirmed"
+  | "RegistrationWaitlisted"
+  | "WaitlistPromoted"
+  | "RegistrationCancelled"
+  | "EventCancelled"
+  | "EventUpdated"
+  | "Welcome";
+
+export interface NotificationResponse {
+  id: string;
+  event_id: string | null;
+  notification_type: NotificationType;
+  payload: Record<string, unknown>;
+  read_at: string | null;
+  created_at: string;
+}
+
+export interface UnreadCountResponse {
+  count: number;
+}
+
 // --- Errors ---
 
 export interface ValidationError {

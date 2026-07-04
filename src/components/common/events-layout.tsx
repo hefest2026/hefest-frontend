@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useLogout } from "@/hooks/use-auth-mutations";
 import { cn } from "@/lib/utils";
 import { BrandMark } from "./brand-mark";
+import { NotificationBell } from "./notification-bell";
 
 export interface EventsTab {
   id: string;
@@ -66,10 +67,11 @@ export function EventsLayout({
                 {tab.label}
               </button>
             ))}
+            <NotificationBell className="ml-3" />
             <Button
               variant="outline"
               size="sm"
-              className="ml-3"
+              className="ml-2"
               onClick={() => logout.mutate()}
               disabled={logout.isPending}
             >
@@ -77,8 +79,9 @@ export function EventsLayout({
             </Button>
           </nav>
 
-          {/* Mobile: burger only */}
-          <div className="flex items-center sm:hidden">
+          {/* Mobile: bell + burger */}
+          <div className="flex items-center gap-2 sm:hidden">
+            <NotificationBell />
             <button
               type="button"
               aria-label={menuOpen ? "Затвори менюто" : "Отвори менюто"}
