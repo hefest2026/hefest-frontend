@@ -34,6 +34,12 @@ export const queryKeys = {
     detail: (jobId: string) =>
       [...queryKeys.notificationJobs.all(), "detail", jobId] as const,
   },
+  notifications: {
+    all: () => ["notifications"] as const,
+    list: () => [...queryKeys.notifications.all(), "list"] as const,
+    unreadCount: () =>
+      [...queryKeys.notifications.all(), "unread-count"] as const,
+  },
   providers: () => ["auth", "providers"] as const,
   me: () => ["auth", "me"] as const,
   stats: () => ["stats"] as const,
